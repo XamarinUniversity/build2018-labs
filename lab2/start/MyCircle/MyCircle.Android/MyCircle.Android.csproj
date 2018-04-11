@@ -81,7 +81,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MyCircle\MyCircle.csproj">
-      <Project>{B68EAE8E-FE95-4B5C-8222-B723A5293011}</Project>
+      <Project>{7460F46A-E349-417E-AA83-0D3897B36940}</Project>
       <Name>MyCircle</Name>
     </ProjectReference>
   </ItemGroup>

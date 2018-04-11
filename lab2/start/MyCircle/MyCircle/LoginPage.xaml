@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage x:Name="thePage" xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:inf="clr-namespace:XamarinUniversity.Infrastructure;assembly=XamU.Infrastructure"
@@ -29,7 +29,6 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
                 <RowDefinition Height="65" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
@@ -42,7 +41,7 @@
                     VerticalOptions="CenterAndExpand" 
                     HorizontalOptions="CenterAndExpand" />
 
-            <Entry FontSize="Medium" HeightRequest="50" Text="{Binding UserName, Mode=TwoWay}"
+            <Entry FontSize="Medium" Text="{Binding UserName, Mode=TwoWay}"
                 Placeholder="My Name" Grid.Row="2" Margin="20" VerticalOptions="Center">
                 <Entry.PlaceholderColor>
                     <OnPlatform x:TypeArguments="Color">
@@ -53,8 +52,7 @@
                 </Entry.PlaceholderColor>
             </Entry>
 
-            <Label Grid.Row="3" Text="My Color" Margin="20,5" TextColor="White" FontSize="Medium" />
-            <ctl:ItemsControl Grid.Row="4" HorizontalOptions="Center" VerticalOptions="Fill" Margin="20,0"
+            <ctl:ItemsControl Grid.Row="3" HorizontalOptions="Center" VerticalOptions="Fill" Margin="20,0"
                 Orientation="Horizontal" ItemsSource="{Binding ProfileColors}">
                 <ctl:ItemsControl.ItemTemplate>
                     <DataTemplate>
@@ -73,7 +71,7 @@
                 </ctl:ItemsControl.ItemTemplate>
             </ctl:ItemsControl>
             
-            <Grid Grid.Row="6">
+            <Grid Grid.Row="5">
                 <Image HorizontalOptions="Center" VerticalOptions="Center"
                        Source="{inf:ImageResourceExtension Source=MyCircle.Images.mycircle.png}"
                         WidthRequest="250" HeightRequest="250" />

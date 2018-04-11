@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:MyCircle"
@@ -8,7 +8,8 @@
              ios:Page.UseSafeArea="true"
              x:Class="MyCircle.MainPage"
              NavigationPage.BackButtonTitle="Back"
-             Title="Main Board">
+             Title="Main Board"
+             BackgroundColor="AliceBlue">
 
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Logout" Icon="logout.png" Command="{Binding Logout}" />

@@ -1,11 +1,12 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:inf="clr-namespace:XamarinUniversity.Infrastructure;assembly=XamU.Infrastructure"
              xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core" 
              x:Class="MyCircle.DetailsPage"
              ios:Page.UseSafeArea="true"
-             Title="{Binding Parent.Message.Text}">
+             Title="{Binding Parent.Message.Text}"
+             BackgroundColor="AliceBlue">
 
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Refresh" Icon="refresh.png" Command="{Binding RefreshData}" />
@@ -13,14 +14,14 @@
     
     <ContentPage.Content>
         <StackLayout>
-            <Frame OutlineColor="LightGray" CornerRadius="0" Margin="5">
+            <Frame OutlineColor="DarkGray" HasShadow="False" CornerRadius="0" Margin="5">
                 <StackLayout Margin="10">
                     <Label Text="{Binding Parent.Author, StringFormat='On {0} wrote:'}" TextColor="Gray" FontSize="Small" />
                     <Label Text="{Binding Parent.Message.Text}" TextColor="{Binding Parent.Message.Color}" FontSize="Small" />
                 </StackLayout>
             </Frame>
 
-            <ListView Margin="0,15,0,0" ItemsSource="{Binding Messages}"
+            <ListView Margin="0" ItemsSource="{Binding Messages}"
                       HasUnevenRows="True" SeparatorVisibility="None"
                       IsPullToRefreshEnabled="True" RefreshCommand="{Binding RefreshData}" IsRefreshing="{Binding Messages.IsRefreshing}">
                 <ListView.ItemTemplate>
