@@ -4,10 +4,10 @@ using System.Linq;
 
 namespace MyCircle.Services
 {
-    public sealed class CircleMessage
+    public class CircleMessage
     {
         public string Id { get; set; }
-        public DateTime CreatedDate { get; set; }
+        public DateTimeOffset? CreatedAt { get; set; }
         public bool IsRoot { get; set; }
         public string ThreadId { get; set; }
         public string Author { get; set; }
@@ -16,9 +16,9 @@ namespace MyCircle.Services
 
         public CircleMessage(string parentId = null)
         {
-            Id = Guid.NewGuid().ToString();
+            //Id = Guid.NewGuid().ToString();
             ThreadId = parentId ?? Guid.NewGuid().ToString();
-            CreatedDate = DateTime.Now;
+            //CreatedAt = DateTime.Now;
         }
     }
 }

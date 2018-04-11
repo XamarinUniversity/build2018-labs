@@ -19,7 +19,7 @@ namespace build2018_mycircle.Migrations
         protected override void Seed(build2018_mycircle.Models.MobileServiceContext context)
         {
             //  This method will be called after migrating to the latest version.
-
+/*
             List<CircleMessage> items = new List<CircleMessage>
             {
                 new CircleMessage
@@ -28,13 +28,14 @@ namespace build2018_mycircle.Migrations
                     IsRoot = true,
                     Author = "System",
                     Text = "Welcome to My Circle!",
+		    Color = "Orange",
                     ThreadId = Guid.NewGuid().ToString()
                 }
             };
 
             // Add/Update items
             items.ForEach(i => context.CircleMessages.AddOrUpdate(i));
-
+*/
             base.Seed(context);
         }
     }
