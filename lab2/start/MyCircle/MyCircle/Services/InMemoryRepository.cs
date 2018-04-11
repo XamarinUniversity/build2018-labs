@@ -43,9 +43,9 @@ namespace MyCircle.Services
                 .AsEnumerable());
         }
 
-        public Task<int> GetDetailCountAsync(string id)
+        public Task<long> GetDetailCountAsync(string id)
         {
-            return Task.FromResult(items.Count(n => n.ThreadId == id && !n.IsRoot));
+            return Task.FromResult(items.LongCount(n => n.ThreadId == id && !n.IsRoot));
         }
 
         public Task AddAsync(CircleMessage message)

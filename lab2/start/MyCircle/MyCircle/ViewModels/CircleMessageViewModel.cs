@@ -8,7 +8,7 @@ namespace MyCircle.ViewModels
     {
         public CircleMessage Message { get; }
         public bool IsCurrentUser { get; }
-        public int DetailCount
+        public long DetailCount
         {
             get => detailCount;
             set => SetPropertyValue(ref detailCount, value);
@@ -46,6 +46,6 @@ namespace MyCircle.ViewModels
             }
         }
 
-        private int detailCount;
+        private long detailCount;
     }
 }
