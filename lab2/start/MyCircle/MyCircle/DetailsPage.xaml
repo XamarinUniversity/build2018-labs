@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:inf="clr-namespace:XamarinUniversity.Infrastructure;assembly=XamU.Infrastructure"
+             xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core" 
+             x:Class="MyCircle.DetailsPage"
+             ios:Page.UseSafeArea="true"
+             Title="{Binding Parent.Message.Text}">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Refresh" Icon="refresh.png" Command="{Binding RefreshData}" />
+    </ContentPage.ToolbarItems>
+    
+    <ContentPage.Content>
+        <StackLayout>
+            <Frame OutlineColor="LightGray" CornerRadius="0" Margin="5">
+                <StackLayout Margin="10">
+                    <Label Text="{Binding Parent.Author, StringFormat='On {0} wrote:'}" TextColor="Gray" FontSize="Small" />
+                    <Label Text="{Binding Parent.Message.Text}" TextColor="{Binding Parent.Message.Color}" FontSize="Small" />
+                </StackLayout>
+            </Frame>
+
+            <ListView Margin="0,15,0,0" ItemsSource="{Binding Messages}"
+                      HasUnevenRows="True" SeparatorVisibility="None"
+                      IsPullToRefreshEnabled="True" RefreshCommand="{Binding RefreshData}" IsRefreshing="{Binding Messages.IsRefreshing}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <StackLayout Padding="5">
+                                <Label Text="{Binding Message.Text}" FontSize="Small" TextColor="{Binding Message.Color}">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsCurrentUser}" Value="True">
+                                            <Setter Property="HorizontalTextAlignment" Value="End" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                                <Label Text="{Binding Author}" FontSize="Micro" TextColor="Gray">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsCurrentUser}" Value="True">
+                                            <Setter Property="HorizontalTextAlignment" Value="End" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <Entry x:Name="messageEntry" Margin="20" Placeholder="Enter Reply" Text="{Binding NewMessage, Mode=TwoWay}">
+                <Entry.Behaviors>
+                    <inf:EventToCommandBehavior EventName="Completed" Command="{Binding AddMessage}" />
+                </Entry.Behaviors>
+            </Entry>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
