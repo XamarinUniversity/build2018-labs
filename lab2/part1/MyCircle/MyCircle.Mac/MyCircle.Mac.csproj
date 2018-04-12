@@ -82,6 +82,12 @@
     <Reference Include="Xamarin.Forms.Xaml">
       <HintPath>..\..\packages\Xamarin.Forms.3.0.0.354232-pre3\lib\Xamarin.Mac\Xamarin.Forms.Xaml.dll</HintPath>
     </Reference>
+    <Reference Include="XamU.Core">
+      <HintPath>..\..\packages\XamarinUniversity.Core.1.1.6\lib\netstandard2.0\XamU.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="XamU.Infrastructure">
+      <HintPath>..\..\packages\XamarinUniversity.Infrastructure.1.1.7\lib\netstandard2.0\XamU.Infrastructure.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Contents.json" />
