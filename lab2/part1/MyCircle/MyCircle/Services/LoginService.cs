@@ -13,9 +13,14 @@ namespace MyCircle.Services
 
         public static async Task LoginAsync(string userName, string color)
         {
+            if (UserInfo.UserName != null
+                && Navigation.ModalStack.Count == 0)
+            {
+                return;
+            }
+
             if (!string.IsNullOrWhiteSpace(userName))
             {
-                Debug.Assert(Navigation.ModalStack.Count > 0);
                 UserInfo.UserName = userName;
                 UserInfo.Color = color;
                 await Navigation.PopModalAsync().ConfigureAwait(false);

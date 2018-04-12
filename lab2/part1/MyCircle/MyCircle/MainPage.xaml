@@ -10,6 +10,15 @@
              NavigationPage.BackButtonTitle="Back"
              Title="Main Board">
 
+    <ContentPage.BackgroundColor>
+        <OnPlatform x:TypeArguments="Color">
+            <OnPlatform.Platforms>
+                <On Platform="iOS" Value="AliceBlue" />
+                <On Platform="macOS" Value="AliceBlue" />
+            </OnPlatform.Platforms>
+        </OnPlatform>
+    </ContentPage.BackgroundColor>
+    
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Logout" Icon="logout.png" Command="{Binding Logout}" />
         <ToolbarItem Text="Refresh" Icon="refresh.png" Command="{Binding RefreshData}" />
