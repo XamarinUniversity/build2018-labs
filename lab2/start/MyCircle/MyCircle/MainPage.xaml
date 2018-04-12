@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:MyCircle"
@@ -8,9 +8,17 @@
              ios:Page.UseSafeArea="true"
              x:Class="MyCircle.MainPage"
              NavigationPage.BackButtonTitle="Back"
-             Title="Main Board"
-             BackgroundColor="AliceBlue">
+             Title="Main Board">
 
+    <ContentPage.BackgroundColor>
+        <OnPlatform x:TypeArguments="Color">
+            <OnPlatform.Platforms>
+                <On Platform="iOS" Value="AliceBlue" />
+                <On Platform="macOS" Value="AliceBlue" />
+            </OnPlatform.Platforms>
+        </OnPlatform>
+    </ContentPage.BackgroundColor>
+    
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Logout" Icon="logout.png" Command="{Binding Logout}" />
         <ToolbarItem Text="Refresh" Icon="refresh.png" Command="{Binding RefreshData}" />

@@ -38,6 +38,8 @@ namespace MyCircle.ViewModels
         {
             string color = ProfileColors.Single(pc => pc.IsSelected).Color;
 
+            await LoginService.LoginAsync(UserName, color);
+
             await App.Repository.AddAsync(new CircleMessage
             {
                 Author = UserName,
@@ -45,8 +47,6 @@ namespace MyCircle.ViewModels
                 IsRoot = true,
                 Text = $"{UserName} entered the circle!",
             });
-
-            await LoginService.LoginAsync(UserName, color);
         }
     }
 }

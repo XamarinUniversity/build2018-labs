@@ -1,9 +1,10 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage x:Name="thePage" xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:inf="clr-namespace:XamarinUniversity.Infrastructure;assembly=XamU.Infrastructure"
              xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core" 
              xmlns:ctl="clr-namespace:XamarinUniversity.Controls;assembly=XamU.Infrastructure"
+             xmlns:layout="clr-namespace:XamarinUniversity.Layout;assembly=XamU.Infrastructure"
              xmlns:vm="clr-namespace:MyCircle.ViewModels"
              x:Class="MyCircle.LoginPage"
              ios:Page.UseSafeArea="true"             
@@ -24,25 +25,13 @@
         </ResourceDictionary>
     </ContentPage.Resources>
     <ContentPage.Content>
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="65" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            
-            <Label Text="Welcome to My Circle!" Grid.Row="0" 
-                   Margin="0,20,0,0"
-                    FontAttributes="Bold" TextColor="White"
-                    FontSize="Large"
-                    VerticalOptions="CenterAndExpand" 
-                    HorizontalOptions="CenterAndExpand" />
+        <StackLayout>
+            <Label Text="Welcome to My Circle!" Margin="0,20,0,0"
+                    FontAttributes="Bold" TextColor="White" FontSize="Large"
+                    VerticalOptions="Start" HorizontalOptions="Center" />
 
             <Entry FontSize="Medium" Text="{Binding UserName, Mode=TwoWay}"
-                Placeholder="My Name" Grid.Row="2" Margin="20" VerticalOptions="Center">
+                Placeholder="My Name" Margin="20" VerticalOptions="Start">
                 <Entry.PlaceholderColor>
                     <OnPlatform x:TypeArguments="Color">
                         <OnPlatform.Platforms>
@@ -52,11 +41,16 @@
                 </Entry.PlaceholderColor>
             </Entry>
 
-            <ctl:ItemsControl Grid.Row="3" HorizontalOptions="Center" VerticalOptions="Fill" Margin="20,0"
-                Orientation="Horizontal" ItemsSource="{Binding ProfileColors}">
+            <ctl:ItemsControl MinimumHeightRequest="65"
+                    HorizontalOptions="Center" VerticalOptions="Center" Margin="20,5"
+                    ItemsSource="{Binding ProfileColors}">
+                <ctl:ItemsControl.ItemsPanel>
+                    <layout:WrapLayout RowSpacing="10" ColumnSpacing="10" />
+                </ctl:ItemsControl.ItemsPanel>
                 <ctl:ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Frame BackgroundColor="{Binding Color}" HasShadow="False" CornerRadius="0" BorderColor="Transparent">
+                        <Frame BackgroundColor="{Binding Color}" HasShadow="False" 
+                               HeightRequest="65" WidthRequest="65" CornerRadius="0" BorderColor="Transparent">
                             <Frame.Triggers>
                                 <DataTrigger TargetType="Frame" Binding="{Binding IsSelected}" Value="True">
                                     <Setter Property="BorderColor" Value="Yellow" />
@@ -71,7 +65,7 @@
                 </ctl:ItemsControl.ItemTemplate>
             </ctl:ItemsControl>
             
-            <Grid Grid.Row="5">
+            <Grid Margin="0,20,0,0" MinimumHeightRequest="65">
                 <Image HorizontalOptions="Center" VerticalOptions="Center"
                        Source="{inf:ImageResourceExtension Source=MyCircle.Images.mycircle.png}"
                         WidthRequest="250" HeightRequest="250" />
@@ -81,6 +75,6 @@
                     <TapGestureRecognizer Command="{Binding Login}" />
                 </Grid.GestureRecognizers>
             </Grid>
-        </Grid>
+        </StackLayout>
     </ContentPage.Content>
 </ContentPage>
