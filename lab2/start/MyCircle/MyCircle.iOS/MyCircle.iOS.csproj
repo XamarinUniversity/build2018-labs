@@ -146,4 +146,13 @@
   <ItemGroup>
     <BundleResource Include="Resources\refresh%402x.png" />
   </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\speech%402x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\speech%403x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\speech.png" />
+  </ItemGroup>
 </Project>

@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core" 
+             x:Class="MyCircle.SpeechTranslatorPage"
+             ios:Page.UseSafeArea="true"             
+             BackgroundColor="AliceBlue">
+    <ContentPage.Content>
+
+        <Grid Margin="20">
+            <Grid IsVisible="{Binding IsTranslating, Converter={StaticResource NotBooleanConverter}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <Image Source="speech.png" VerticalOptions="Center" HorizontalOptions="Center" />
+
+                <Label Text="Recording Now. Speak in a normal tone of voice and tap the Submit button when you are finished."
+                   FontSize="Large" HorizontalTextAlignment="Center" LineBreakMode="WordWrap" Grid.Row="1" />
+
+                <Button BackgroundColor="{StaticResource BlueColor}" Text="Submit" TextColor="White" 
+                        Margin="20" FontSize="Medium" Command="{Binding StopRecording}" Grid.Row="2" VerticalOptions="Center"/>
+            </Grid>
+
+            <StackLayout VerticalOptions="CenterAndExpand" IsVisible="{Binding IsTranslating}">
+                <Label Text="Translating ... Please Wait ..." FontSize="Large" />
+                <ActivityIndicator Color="{StaticResource BlueColor}" IsRunning="True" IsVisible="True" />
+            </StackLayout>
+
+        </Grid>
+
+    </ContentPage.Content>
+</ContentPage>
