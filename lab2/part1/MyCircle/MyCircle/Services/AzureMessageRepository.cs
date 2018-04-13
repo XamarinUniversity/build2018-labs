@@ -26,11 +26,10 @@ namespace MyCircle.Services
             return messages.InsertAsync(message);
         }
 
-        public async Task<IEnumerable<CircleMessage>> GetRootsAsync(int count)
+        public async Task<IEnumerable<CircleMessage>> GetRootsAsync()
         {
             var result = await messages.Where(cm => cm.IsRoot)
                 .OrderByDescending(cm => cm.CreatedAt)
-                .Take(count)
                 .ToEnumerableAsync();
 
             return result.ToList();
