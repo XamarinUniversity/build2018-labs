@@ -20,7 +20,7 @@ namespace MyCircle.ViewModels
         private static async Task<IEnumerable<CircleMessageViewModel>> LoadAllRoots()
         {
             var results = await App.Repository
-                .GetRootsAsync(100)
+                .GetRootsAsync()
                 .ConfigureAwait(false);
 
             return results.Select(c => new CircleMessageViewModel(c));

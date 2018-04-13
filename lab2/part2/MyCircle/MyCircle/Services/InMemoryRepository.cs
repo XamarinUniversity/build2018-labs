@@ -26,12 +26,11 @@ namespace MyCircle.Services
             LoopAddingData();
         }
 
-        public Task<IEnumerable<CircleMessage>> GetRootsAsync(int count)
+        public Task<IEnumerable<CircleMessage>> GetRootsAsync()
         {
             return Task.FromResult(items
                 .Where(n => n.IsRoot)
                 .OrderByDescending(n => n.CreatedAt)
-                .Take(count)
                 .AsEnumerable());
         }
 
