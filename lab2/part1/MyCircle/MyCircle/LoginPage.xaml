@@ -8,7 +8,7 @@
              xmlns:vm="clr-namespace:MyCircle.ViewModels"
              x:Class="MyCircle.LoginPage"
              ios:Page.UseSafeArea="true"             
-             BackgroundColor="#FF1E86EA">
+             BackgroundColor="{StaticResource BlueColor}">
     <ContentPage.Resources>
         <ResourceDictionary>
             <x:Array Type="{x:Type vm:ProfileColorViewModel}" x:Key="ProfileColors">

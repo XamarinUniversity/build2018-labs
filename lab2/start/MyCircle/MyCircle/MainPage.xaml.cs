@@ -22,7 +22,7 @@ namespace MyCircle
         {
             base.OnAppearing();
 
-            BindingContext = new MainViewModel();
+            BindingContext = new MainViewModel { NewMessage = messageEntry.Text };
 
             if (Device.RuntimePlatform == Device.UWP
                 || Device.RuntimePlatform == Device.WPF 
