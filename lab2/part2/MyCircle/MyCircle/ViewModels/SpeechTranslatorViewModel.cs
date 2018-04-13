@@ -61,6 +61,9 @@ namespace MyCircle.ViewModels
 
         private async Task<bool> RequestAudioPermissions()
         {
+            if (Device.RuntimePlatform == Device.macOS)
+                return true;
+
             PermissionStatus status = PermissionStatus.Unknown;
 
             try

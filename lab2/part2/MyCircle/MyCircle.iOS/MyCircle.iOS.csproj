@@ -127,18 +127,18 @@
     <PackageReference Include="Plugin.Permissions">
       <Version>2.2.1</Version>
     </PackageReference>
-    <PackageReference Include="Xam.Plugin.SimpleAudioRecorder">
-      <Version>0.0.2.2-alpha</Version>
-    </PackageReference>
     <PackageReference Include="Xam.Plugin.SpeechToText">
       <Version>0.0.2.1-alpha</Version>
     </PackageReference>
     <PackageReference Include="Xamarin.Forms" Version="3.0.0.354232-pre3" />
+    <PackageReference Include="Xam.Plugin.SimpleAudioRecorder">
+      <Version>0.3.0-beta</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <ItemGroup>
     <ProjectReference Include="..\MyCircle\MyCircle.csproj">
-      <Project>{B68EAE8E-FE95-4B5C-8222-B723A5293011}</Project>
+      <Project>{7460F46A-E349-417E-AA83-0D3897B36940}</Project>
       <Name>MyCircle</Name>
     </ProjectReference>
   </ItemGroup>
