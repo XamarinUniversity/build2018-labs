@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:inf="clr-namespace:XamarinUniversity.Infrastructure;assembly=XamU.Infrastructure"
+             x:Class="MyCircle.MessagesView" x:Name="theView">
+
+    <StackLayout>
+        <ListView ItemsSource="{Binding Messages}" ItemTapped="OnMessageSelected" 
+                  HasUnevenRows="True" SeparatorVisibility="None" 
+                  IsPullToRefreshEnabled="True" RefreshCommand="{Binding RefreshData}" 
+                  IsRefreshing="{Binding Messages.IsRefreshing}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <Grid Padding="5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="5" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label Grid.Row="0" Grid.Column="0" LineBreakMode="WordWrap"
+                                Text="{Binding Message.Text}" FontSize="Small" 
+                                TextColor="{Binding Message.Color}">
+                                <Label.Triggers>
+                                    <DataTrigger TargetType="Label" Binding="{Binding IsCurrentUser}" Value="True">
+                                        <Setter Property="HorizontalTextAlignment" Value="End" />
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+
+                            <StackLayout Orientation="Horizontal" Grid.Row="1" Grid.Column="0">
+                                <Label FontSize="Micro" TextColor="Gray" Text="{Binding Author}" />
+                                <Label IsVisible="True" FontSize="Micro" TextColor="LightGray" Text="(has replies)">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding DetailCount}" Value="0">
+                                            <Setter Property="IsVisible" Value="False" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                                <StackLayout.Triggers>
+                                    <DataTrigger TargetType="StackLayout" Binding="{Binding IsCurrentUser}" Value="True">
+                                        <Setter Property="HorizontalOptions" Value="End" />
+                                    </DataTrigger>
+                                </StackLayout.Triggers>
+                            </StackLayout>
+
+                            <Label Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" VerticalOptions="Center"
+                                FontFamily="Segoe UI" FontSize="Large" Text="&#x203A;" TextColor="Accent" 
+                                IsVisible="{Binding Source={x:Reference theView}, Path=ShowDetails}" />
+
+                        </Grid>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <Entry x:Name="messageEntry" Margin="20" Grid.Column="0" Placeholder="Enter Message" Text="{Binding NewMessage, Mode=TwoWay}">
+            <Entry.Behaviors>
+                <inf:EventToCommandBehavior EventName="Completed" Command="{Binding AddMessage}" />
+            </Entry.Behaviors>
+        </Entry>
+
+    </StackLayout>
+</ContentView>

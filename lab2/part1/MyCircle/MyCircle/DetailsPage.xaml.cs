@@ -14,10 +14,7 @@ namespace MyCircle
 		protected override void OnAppearing()
 		{
 			base.OnAppearing();
-			if (Device.RuntimePlatform == Device.UWP)
-			{
-				messageEntry.Focus();
-			}
+            Messages.OnAppearing();
 		}
 	}
 }

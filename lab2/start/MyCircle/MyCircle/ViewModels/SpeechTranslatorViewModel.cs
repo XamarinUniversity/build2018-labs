@@ -31,12 +31,10 @@ namespace MyCircle.ViewModels
             finishedCallback = finished ?? throw new ArgumentNullException(nameof(finished));
 
             StopRecording = new Command(async () => await OnStopRecording(), () => !IsTranslating);
-
-            OnStartRecording().IgnoreResult();
         }
 
 
-        private Task OnStartRecording()
+        public Task StartRecording()
         {
             // TODO: add code to start recording.
 

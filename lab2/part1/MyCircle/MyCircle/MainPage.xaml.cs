@@ -13,7 +13,7 @@ namespace MyCircle
 			InitializeComponent();
         }
 
-        private async void OnMessageSelected(object sender, ItemTappedEventArgs e)
+        async void OnMessageSelected(object sender, ItemTappedEventArgs e)
         {
             var item = e.Item as CircleMessageViewModel;
             await Navigation.PushAsync(new DetailsPage() { BindingContext = new DetailsViewModel(item) });
@@ -23,16 +23,9 @@ namespace MyCircle
         {
             base.OnAppearing();
 
-            BindingContext = new MainViewModel { NewMessage = messageEntry.Text };
+            BindingContext = new MainViewModel { NewMessage = ((MainViewModel)BindingContext)?.NewMessage };
 
-            if (Device.RuntimePlatform == Device.UWP
-                || Device.RuntimePlatform == Device.WPF 
-                || Device.RuntimePlatform == Device.macOS)
-            {
-                // On desktop apps, shift focus to the entry.
-                // Don't do this on mobile devices as onscreen keyboard obscures data.
-                messageEntry.Focus();
-            }
+            Messages.OnAppearing();
         }
     }
 }
