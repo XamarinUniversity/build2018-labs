@@ -63,6 +63,25 @@ private async Task<bool> RequestAudioPermissions()
 
 ## Part3
 
+1. Add Microsoft.Azure.Mobile.Client.SQLiteStore to all projects
+2. Add VC2015 runmtime lib to UWP app
+2. Need a parameterless ctor on CircleMessage!
+3. Add InitializeTableAsync, InitializeOfflineStorageAsync, and SynchronizeAsync to Azure repo
+4. Call Synchronize in each method.
+..
+5. Add Xam.Plugin.Connectivity to all projects
+6. Update SynchronizeAsync to check connectivity .. fun test: use if (true) to exit early and show that it's cached offline with no sync.
+..
+7. Add pushChanges to Synchronize and set to false when using GetXXX methods.
+..
+7. Add ResolveConflictAsync method
+8. Add Version field to CircleMessage
+9. Implement IEquatable<CircleMessage> on CircleMessage .. Test Id, Text, Color, ThreadId.
+..
+10. Add PurgeOldRecordsAsync, call at end of InitializeTableAsync
+
+## Part4
+
 1. Azure only loads 50 records.
 3. Show only 50 are shown.
 
