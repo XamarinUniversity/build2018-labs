@@ -6,7 +6,7 @@
 
     <StackLayout>
         <ListView ItemsSource="{Binding Messages}" ItemTapped="OnMessageSelected" 
-                  HasUnevenRows="True" SeparatorVisibility="None" 
+                  HasUnevenRows="True" SeparatorVisibility="None" CachingStrategy="RecycleElement"
                   IsPullToRefreshEnabled="True" RefreshCommand="{Binding RefreshData}" 
                   IsRefreshing="{Binding Messages.IsRefreshing}">
             <ListView.ItemTemplate>
