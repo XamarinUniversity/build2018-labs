@@ -63,6 +63,8 @@ namespace MyCircle
 
         async void OnTranslateSpeechToText(object sender, EventArgs e)
         {
+            if (!messageEntry.IsEnabled) return;
+
             var vm = new SpeechTranslatorViewModel(async s => {
                 if (!string.IsNullOrWhiteSpace(s))
                 {

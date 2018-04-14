@@ -28,11 +28,9 @@ namespace MyCircle.Services
 
         public async Task<IEnumerable<CircleMessage>> GetRootsAsync()
         {
-            var result = await messages.Where(cm => cm.IsRoot)
+            return await messages.Where(cm => cm.IsRoot)
                 .OrderByDescending(cm => cm.CreatedAt)
                 .ToEnumerableAsync();
-
-            return result.ToList();
         }
 
         public async Task<long> GetDetailCountAsync(string id)

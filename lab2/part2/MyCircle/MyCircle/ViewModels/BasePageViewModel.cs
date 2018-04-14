@@ -31,7 +31,9 @@ namespace MyCircle.ViewModels
             RefreshData = new Command(async () => await Messages.RefreshAsync());
             Messages = new RefreshingCollection<CircleMessageViewModel>(refreshMethod)
             {
-                Merge = OnMergeNewData
+                Merge = OnMergeNewData,
+                // TODO: move to UI or use service?
+                RefreshFailed = async (s, ex) => await App.Current.MainPage.DisplayAlert("Error", ex.Message, "OK")
             };
 
             Messages.RefreshAsync().ConfigureAwait(false);

@@ -80,14 +80,4 @@ private async Task<bool> RequestAudioPermissions()
 ..
 10. Add PurgeOldRecordsAsync, call at end of InitializeTableAsync
 
-## Part4
-
-1. Azure only loads 50 records.
-3. Show only 50 are shown.
-
-4. Add paging support to interface + IMD and to signature of Azure
-
-5. Add NuGet package: Xamarin.Forms.Extended.InfiniteScrolling
-
-2. Go back to inmemory version and change LoadReocrds to create 500 up front.
-3. Need to uncomment Id/CreatedAt in CircleMessage!
+> CAN UNINSTALL APP TO FORCE A FULL CACHE CLEAR!
