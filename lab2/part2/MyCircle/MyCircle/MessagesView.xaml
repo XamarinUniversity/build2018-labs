@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:inf="clr-namespace:XamarinUniversity.Infrastructure;assembly=XamU.Infrastructure"
@@ -62,13 +62,25 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <Entry x:Name="messageEntry" Grid.Column="0" Placeholder="Enter Message" Text="{Binding NewMessage, Mode=TwoWay}">
+            <Entry x:Name="messageEntry" Grid.Column="0" Placeholder="Enter Message" Text="{Binding NewMessage, Mode=TwoWay}" >
+                <Entry.HeightRequest>
+                    <OnPlatform x:TypeArguments="x:Double">
+                        <On Platform="macOS" Value="60"/>    
+                    </OnPlatform>
+                </Entry.HeightRequest>
+
                 <Entry.Behaviors>
                     <inf:EventToCommandBehavior EventName="Completed" Command="{Binding AddMessage}" />
                 </Entry.Behaviors>
             </Entry>
 
             <Image Source="speech.png" Grid.Column="2">
+                <Image.WidthRequest>
+                    <OnPlatform x:TypeArguments="x:Double">
+                        <On Platform="macOS" Value="60"/>    
+                    </OnPlatform>
+                </Image.WidthRequest>
+
                 <Image.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnTranslateSpeechToText" />
                 </Image.GestureRecognizers>

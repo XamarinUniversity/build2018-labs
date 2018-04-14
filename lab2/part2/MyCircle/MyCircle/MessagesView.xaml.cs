@@ -53,7 +53,6 @@ namespace MyCircle
                 // Don't do this on mobile devices as onscreen keyboard obscures data.
                 messageEntry.Focus();
             }
-
         }
 
         void OnMessageSelected(object sender, ItemTappedEventArgs e)
