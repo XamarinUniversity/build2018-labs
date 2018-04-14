@@ -21,7 +21,7 @@
     <PackageReference Include="Microsoft.Azure.Mobile.Client.SQLiteStore" Version="4.0.2" />
     <PackageReference Include="Plugin.Permissions" Version="2.2.1" />
     <PackageReference Include="Xam.Plugin.Connectivity" Version="4.0.0.186-beta" />
-    <PackageReference Include="Xam.Plugin.SimpleAudioRecorder" Version="0.0.2.2-alpha" />
+    <PackageReference Include="Xam.Plugin.SimpleAudioRecorder" Version="0.3.0-beta" />
     <PackageReference Include="Xam.Plugin.SpeechToText" Version="0.0.2.1-alpha" />
     <PackageReference Include="Xamarin.Forms" Version="3.0.0.354232-pre3" />
     <PackageReference Include="XamarinUniversity.Infrastructure" Version="1.1.7" />

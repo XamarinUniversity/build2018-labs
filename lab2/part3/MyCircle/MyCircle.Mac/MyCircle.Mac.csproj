@@ -80,11 +80,11 @@
     <Reference Include="Plugin.Permissions.Abstractions, Version=2.2.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Plugin.Permissions.2.2.1\lib\netstandard1.0\Plugin.Permissions.Abstractions.dll</HintPath>
     </Reference>
-    <Reference Include="Plugin.SimpleAudioRecorder.Abstractions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Xam.Plugin.SimpleAudioRecorder.0.0.2.2-alpha\lib\Xamarin.Mac20\Plugin.SimpleAudioRecorder.Abstractions.dll</HintPath>
+    <Reference Include="Plugin.SimpleAudioRecorder, Version=1.0.6677.23413, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Xam.Plugin.SimpleAudioRecorder.0.3.0-beta\lib\Xamarin.Mac20\Plugin.SimpleAudioRecorder.dll</HintPath>
     </Reference>
-    <Reference Include="Plugin.SimpleAudioRecorder.macOS, Version=1.0.6676.18929, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Xam.Plugin.SimpleAudioRecorder.0.0.2.2-alpha\lib\Xamarin.Mac20\Plugin.SimpleAudioRecorder.macOS.dll</HintPath>
+    <Reference Include="Plugin.SimpleAudioRecorder.Abstractions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Xam.Plugin.SimpleAudioRecorder.0.3.0-beta\lib\Xamarin.Mac20\Plugin.SimpleAudioRecorder.Abstractions.dll</HintPath>
     </Reference>
     <Reference Include="Plugin.SpeechToText, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Xam.Plugin.SpeechToText.0.0.2.1-alpha\lib\netstandard1.3\Plugin.SpeechToText.dll</HintPath>
