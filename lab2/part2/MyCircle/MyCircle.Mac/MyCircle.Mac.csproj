@@ -72,7 +72,7 @@
       <HintPath>..\..\packages\Plugin.Permissions.2.2.1\lib\netstandard1.0\Plugin.Permissions.Abstractions.dll</HintPath>
     </Reference>
     <Reference Include="Plugin.SpeechToText, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Xam.Plugin.SpeechToText.0.0.2.1-alpha\lib\netstandard1.3\Plugin.SpeechToText.dll</HintPath>
+      <HintPath>..\..\packages\Plugin.SpeechToText.0.1.0-beta\lib\netstandard1.3\Plugin.SpeechToText.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
