@@ -127,6 +127,12 @@ namespace MyCircle.Services
 
         async Task PullChangesAsync(bool forceFullSync = false)
         {
+            if (!(await CrossConnectivity.Current.IsRemoteReachable(client.MobileAppUri, TimeSpan.FromSeconds(5))))
+            {
+                Debug.WriteLine($"Cannot connect to {client.MobileAppUri}. Appears to be offline");
+                return;
+            }
+
             // Pull changes from Azure back down to our copy
             // We pull the entire table down incrementally, unless a full sync is required.
             // We could also cache off specific queries - but that would require more round trips

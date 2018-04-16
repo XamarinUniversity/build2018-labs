@@ -162,7 +162,7 @@
       <Version>2.2.1</Version>
     </PackageReference>
     <PackageReference Include="Xam.Plugin.SimpleAudioRecorder">
-      <Version>0.0.2.2-alpha</Version>
+      <Version>0.3.0-beta</Version>
     </PackageReference>
     <PackageReference Include="Xam.Plugin.SpeechToText">
       <Version>0.0.2.1-alpha</Version>
