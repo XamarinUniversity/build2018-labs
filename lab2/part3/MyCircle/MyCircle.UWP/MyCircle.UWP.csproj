@@ -164,14 +164,14 @@
     <PackageReference Include="Plugin.Permissions">
       <Version>2.2.1</Version>
     </PackageReference>
+    <PackageReference Include="Plugin.SpeechToText">
+      <Version>0.1.0-beta</Version>
+    </PackageReference>
     <PackageReference Include="Xam.Plugin.Connectivity">
       <Version>4.0.0.186-beta</Version>
     </PackageReference>
     <PackageReference Include="Xam.Plugin.SimpleAudioRecorder">
       <Version>0.3.0-beta</Version>
-    </PackageReference>
-    <PackageReference Include="Xam.Plugin.SpeechToText">
-      <Version>0.0.2.1-alpha</Version>
     </PackageReference>
     <PackageReference Include="Xamarin.Forms" Version="3.0.0.354232-pre3" />
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="6.0.8" />
