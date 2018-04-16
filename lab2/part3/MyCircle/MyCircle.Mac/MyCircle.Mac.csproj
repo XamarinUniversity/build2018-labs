@@ -87,7 +87,7 @@
       <HintPath>..\..\packages\Xam.Plugin.SimpleAudioRecorder.0.3.0-beta\lib\Xamarin.Mac20\Plugin.SimpleAudioRecorder.Abstractions.dll</HintPath>
     </Reference>
     <Reference Include="Plugin.SpeechToText, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Xam.Plugin.SpeechToText.0.0.2.1-alpha\lib\netstandard1.3\Plugin.SpeechToText.dll</HintPath>
+      <HintPath>..\..\packages\Plugin.SpeechToText.0.1.0-beta\lib\netstandard1.3\Plugin.SpeechToText.dll</HintPath>
     </Reference>
     <Reference Include="SQLitePCLRaw.batteries_green, Version=1.0.0.0, Culture=neutral, PublicKeyToken=a84b7dcfb1391f7f, processorArchitecture=MSIL">
       <HintPath>..\..\packages\SQLitePCLRaw.bundle_green.1.1.2\lib\Xamarin.Mac20\SQLitePCLRaw.batteries_green.dll</HintPath>
