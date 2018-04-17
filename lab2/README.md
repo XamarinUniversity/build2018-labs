@@ -1,5 +1,7 @@
 # Connect your mobile app to the cloud with Azure App Services
 
+### Estimated completion time: 60-75 minutes
+
 In this walk-through, we will modify a Xamarin.Forms application to utilize a few Azure services. We will be working with three specific services:
 
 1. [Azure App Services for Mobile Apps](https://azure.microsoft.com/en-us/services/app-service/mobile/)
@@ -19,11 +21,11 @@ The app we will be working with is a community chat application named **My Circl
 
 We will add this support in three stages:
 
-1. [Part 1](#part-one-add-support-for-azure) - We will add the initial support to connect our app to Azure App Services and store our data in the cloud.
+1. [Part 1](#part-1-add-support-for-azure) - We will add the initial support to connect our app to Azure App Services and store our data in the cloud.
 
-2. **Part 2** - We will add support for Azure Speech to Text cognitive services.
+2. [Part 2](#part-2-add-speech-services) - We will add support for Azure Speech to Text cognitive services.
 
-3. **Part 3** - We will finish our app by adding support for offline data synchronization so the app continues to work properly when the network is unavailable.
+3. [Part 3](#part-3-add-offline-sync) - We will finish our app by adding support for offline data synchronization so the app continues to work properly when the network is unavailable.
 
 ## Download the code
 
@@ -142,11 +144,13 @@ The app uses [XAML](https://docs.microsoft.com/en-us/xamarin/xamarin-forms/xaml/
 
 Let's start by creating an Azure Mobile App Service that our mobile app can use to store data in the cloud. There is an existing version of this service located at https://build2018mycircle.azurewebsites.net, however it likely won't be around forever, so you can use these steps to create your own version of the service. 
 
-If you want to use the pre-supplied service, you can skip to [Part One](#part-one-add-support-for-azure) where we will add support for Azure to the app.
+In addition, the source code for the pre-supplied service is located in this Github repo [here](https://github.com/XamarinUniversity/build2018-labs/tree/master/lab2/azure-service).
+
+If you want to use the pre-supplied service, you can skip to [Part One](#part-1-add-support-for-azure) where we will add support for Azure to the app.
 
 > **Note**: at this time, this part of the lab can only be done on Visual Studio for Windows. Once you have the service, you can use Visual Studio for Mac; alternatively, you can create the service using the [Azure Portal](https://portal.azure.com).
 
-### Create the build2018mycircle solution
+### Create the Azure Mobile App Service solution
 
 1. Open Visual Studio for Windows.
 
@@ -196,7 +200,7 @@ public class CircleMessage : EntityData
 
 ### Rename the TodoItemController
 
-1. Expand the Controllers folder in the Solution.
+1. Expand the **Controllers** folder in the Solution.
 
 2. Open the **TodoItemController.cs** file.
 
@@ -234,11 +238,11 @@ public class CircleMessage : EntityData
 
 5. Give the app a name - this will become your URL which the mobile app will need to know.
 
-6. Pick the subscription group, resource group, and hosting plan.
+6. Pick the subscription group, resource group, and hosting plan. A free plan is fine since this won't receive much traffic.
 
 7. On the right side, click the **Create a SQL Database** link.
 
-8. Select or create a SQL Server to host your database - you will need the admin username and password.
+8. Select or create a SQL Server to host your database - you will need the admin username and password. Again, if you decide to create a DB, a free plan is fine for this.
 
 9. Click **OK** to add the database configuration.
 
@@ -248,26 +252,206 @@ public class CircleMessage : EntityData
 https://<APPNAME>.azurewebsites.net
 ```
 
-## Part One: add support for Azure
+## Part 1: add support for Azure
 
 In this first part, we will replace our test `InMemoryRepository` class with an Azure version that connects to an existing Azure Mobile App Service.
 
+> **Note:** Our service is located at https://build2018mycircle.azurewebsites.net, if you used the prior instructions to create and publish your own service, make sure to use _that_ service URL instead
+
+### Add client-support for Azure Mobile App Services
+
+1. Right-click on the root node of the Solution Explorer and select **Manage NuGet Packages for Solution**.
+
+> **Note**: on Visual Studio for Mac you cannot control NuGet packages at the solution level but have to add the packages to each project separately. Do the same steps but on each project node instead.
+
+2. Use the **Browse** feature and search for the **Microsoft.Azure.Mobile.Client** NuGet package.
+
+3. Add the package to each project in the solution - on Visual Studio for Windows you can do this in one step, on macOS you will need to do it one at a time.
+
+![NuGet on Windows](media/image10.png)
+
+### Examine the IAsyncMessageRepository interface
+
+1. Our message repository is currently local and defined by the interface `IAsyncMessageRepository`. Locate that source file in the **MyCircle** shared-code project and open it.
+
+2. The interface looks like this. Notice that all the methods are asynchronous and return `Task`s. Since we are going to be talking to a network-based DB in the cloud, this sort of interface makes perfect sense.
+
+```csharp
+public interface IAsyncMessageRepository
+{
+    Task AddAsync(CircleMessage message);
+    Task<IEnumerable<CircleMessage>> GetRootsAsync();
+    Task<long> GetDetailCountAsync(string id);
+    Task<IEnumerable<CircleMessage>> GetDetailsAsync(string id);
+}
+```
+
+| Method | Purpose |
+|--------|---------|
+| `AddAsync` | Add a new `CircleMessage` to the database. |
+| `GetRootsAsync` | Retrieve all root (main) conversations - these are the ones added on the Main screen and they might, or might not have children. |
+| `GetDetailCountAsync` | Return the number of _child_ messages associated with the specified root message id. |
+| `GetDetailsAsync` | Returns all the child messages (threads) for the given root message id. |
+
+> **Note:** If you like, you can look at a concrete implementation of this interface which manages an in-memory collection of `CircleMessages` in the **Services/InMemoryRepository.cs** file.
+
+### Add a new AzureMessageRepository class
+
+1. Add a new C# class into the **Services** folder. Name it **AzureMessageRepository.cs**
+
+2. Make the class `public` and `sealed`. We don't plan to have anyone derive from the class and this can provide a (small) performance benefit when accessing the interface methods since the compiler knows there's no virtual dispatch required.
+
+### Add support for Azure
+
+This is where the meat of the Azure connectivity will be added. We will create a `MobileServiceClient` object which will give us access to our Azure service. This is really just a thing wrapper around `HttpClient` and it uses HTTP and REST protocols to work with the server-side code.
+
+Each `TableController` you create on the server is mapped to a `IMobileServiceTable<T>` which lets you perform CRUD operations on the server table.
+
+1. Add a `string` constant to the class to define where our Azure service is located. Name it **AzureServiceUrl** and set the value to be your Azure service URL:
+
+```csharp
+const string AzureServiceUrl = "https://build2018mycircle.azurewebsites.net";
+```
+
+2. Add a private field of type `Microsoft.WindowsAzure.MobileServices.MobileServiceClient` and name it **client**. This is our client accessor class to our Azure service.
+
+3. Add a private field of type `Microsoft.WindowsAzure.MobileServices.IMobileServiceTable<CircleMessage>` and name it messages. This will hold the retrieved messages from Azure.
+
+4. Add a public, default (no-argument) constructor to the class.
+
+5. In the constructor, create a new `MobileServiceClient`, passing it your `AzureServiceUrl` and assign it to the **client** field.
+
+6. After the **client** creation, call the method `GetTable<CircleMessage>()` to retrieve the server-side representation of `CircleMessages` from Azure and assign the result to the **messages** field.
+
+```csharp
+public sealed class AzureMessageRepository
+{
+    const string AzureServiceUrl = "https://build2018mycircle.azurewebsites.net";
+
+    MobileServiceClient client;
+    IMobileServiceTable<CircleMessage> messages;
+
+    public AzureMessageRepository()
+    {
+        client = new MobileServiceClient(AzureServiceUrl);
+        messages = client.GetTable<CircleMessage>();
+    }
+}
+```
+
+### Implement IAsyncMessageRepository
+
+1. Have the class implement the `IAsyncMessageRepository` interface. You can use the built-in refactoring support to provide stubbed out implementations for the required methods or type them all yourself using the [interface definition above](#examine-the-iasyncmessagerepository-interface).
+
+All the methods will be implemented using the **messages** `IMobileServiceTable<CircleMessage>` field.
+
+### Implement the Add method
+
+1. Use `InsertAsync` on the **messages** field to add the passed `CircleMessage`. 
+
+```csharp
+public Task AddAsync(CircleMessage message)
+{
+    return messages.InsertAsync(message);
+}
+```
+
+### Implement GetRootsAsync
+
+The `IMobileServiceTable` interface supports some basic LINQ capabilities which are turned into OData `$filter` queries that are executed on the server side. We can use these to filter our data so we are only returning the specific data we need vs. the entire table every time.
+
+1. Use LINQ to add a `Where` clause that only looks for root messages (`IsRoot == true`), and where the returned data is in descending order on the `CreatedDate` property.
+
+2. Use the extension method `ToEnumerableAsync` to execute the query on the server and return the results. You can use `async` and `await` to make the code easy to work with as shown below.
+
+```csharp
+public async Task<IEnumerable<CircleMessage>> GetRootsAsync()
+{
+    return await messages.Where(cm => cm.IsRoot)
+        .OrderByDescending(cm => cm.CreatedDate)
+        .ToEnumerableAsync();
+}
+```
+
+### Implement GetDetailsAsync
+
+1. You can implement `GetDetailsAsync` in the same way - except the `Where` clause should look for all `ThreadId` properties matching the passed **id** parameter.
+
+2. It should be ordered by the `CreatedDate` property in _ascending_ order.
+
+3. Use the same `ToEnumerableAsync` extension method to execute the query and return the `Task` with results.
+
+### Implement GetDetailCountAsync
+
+1. Use the same basic query you created for `GetDetailsAsync`, except add a test to your `Where` clause to exclude root messages so we only see the children (`IsRoot == false`).
+
+2. Before calling `ToEnumerableAsync`, add a call to `IncludeTotalCount` into the fluent calls - this will return the total count of matching objects.
+
+3. Call `ToEnumerableAsync` and cast the result to `IQueryResultEnumerable<CircleMessage>` - this has a `TotalCount` property you can return from the method.
+
+4. An optimization you can make here is to append `ConfigureAwait(false)` to the fluent calls so we reuse the worker thread vs. coming back to the UI thread on the `await` call. This is optional but shown below.
+
+```csharp
+public async Task<long> GetDetailCountAsync(string id)
+{
+    var result = await messages
+                   .Where(cm => cm.ThreadId == id && !cm.IsRoot)
+                   .IncludeTotalCount().ToEnumerableAsync()
+                   .ConfigureAwait(false) as IQueryResultEnumerable<CircleMessage>;
+    return result.TotalCount;
+}
+```
+
+### Replace the created repository
+
+1. Open the **App.xaml.cs** file in the **MyCircle** shared-code project.
+
+2. Locate the static property holding the `IAsyncMessageRepository` instance.
+
+3. Replace the implementation with a new `AzureMessageRepository`.
+
+```csharp
+public static IAsyncMessageRepository Repository = new AzureMessageRepository();
+```
+
+4. Build the solution and cleanup any compilation errors.
+
+### Fixup the data model
+
+You could run the app now, but it will have a runtime failure. The problem is that our `CircleMessage` definition doesn't _quite_ match the server implementation. There are two things we need to do to it.
+
+1. The server should be assigning the primary key (`Id`). Currently, our code is doing that.
+
+2. The server uses the name `CreatedAt` to hold the creation date as a `DateTimeOffset?` - this is a _hardcoded_ field in Azure and our client must conform either by changing the property name, or applying a `JsonProperty` attribute to change the network representation.
+
+Here's the correct definition of our `CircleMessage`:
+
+```csharp
+public class CircleMessage
+{
+	...
+    public DateTimeOffset? CreatedAt { get; set; }
+
+	...
+    public CircleMessage(string parentId = null)
+    {
+        ThreadId = parentId ?? Guid.NewGuid().ToString();
+    }
+```
+
+### Run the app
+
+1. Run the application on your platform of choice. You should no longer see the test data, but should now be seeing data from the cloud.
+
+2. If you insert a message, other copies of the app should be able to refresh and see your messages!
+
+> **Note** Given that this is a shared data source, be family friendly please!
+
+3. You can respond to messages.
+
+4. If you close the app and reopen it, you should still see your messages.
 
 
-1. Add Microsoft.Azure.Mobile.Client NuGet to all projects.
-2. Create AzureMessageRepository.cs
-3. Implement IMessageRepository
-4. Add MobileServiceClient field and initialize with "https://build2018mycircle.azurewebsites.net"
-5. Add `IMobileServiceTable<CircleMessage> messages;`
-6. Initialize messages with `client.GetTable<CircleMessage>();`
-
-7. Modify CircleMessage data structure
-	a) Rename `CreatedDate` to `CreatedAt` and make `DateTimeOffset?`
-	b) Remove setter for `Id` and `CreatedAt` in ctor
-
-8. Implement interface
-9. Replace repository in `App.xaml.cs`
-10. Run the app and see server data.
 
 
 1. Add Xam.Plugin.SimpleAudioRecorder (pre-release)
