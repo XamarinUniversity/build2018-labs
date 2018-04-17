@@ -175,12 +175,12 @@ Here we will implement the **Entry** data-model class which will hold the data f
 
 1. Create a new **Data** folder in the **Minutes** shared-code project.
 
-![Data folder](media/images19.png)
+![Data folder](media/image19.png)
 
 2.  Add a new class to the **Data** folder you just created. Name it **NoteEntry**.
 
 ![Create a new Class](media/image19.1.png)
-![Entry class in the shared-code project](media/images19.2.png)
+![Entry class in the shared-code project](media/image19.2.png)
 
 3.  Add `public` to the class definition.
 
@@ -496,7 +496,7 @@ protected override async void OnAppearing()
 
 4. Run the app on at least one platform. You should see the output of the `ToString` method displayed for each `NoteEntry` object.
 
-![Running on UWP](media/images20.png)
+![Running on UWP](media/image20.png)
 
 ## Specify a NoteEntry's visualization in a ListView
 
@@ -578,7 +578,7 @@ Instead of hard-coded text which repeats on each line, we really want to pull th
 
 5.  Run the app on at least one platform. You should see the values from the **NoteEntry** objects displayed in the list.
 
-![Running on UWP](media/images21.png)
+![Running on UWP](media/image21.png)
 
 ## Adding a new Editing screen
 
