@@ -609,7 +609,7 @@ You can then get the text from the `DisplayText` property of the returning objec
 	- Set the `Source` property to "speech.png"
 	- Set the `Grid.Column` property to "2".
 
-7. Add a `TapGestureRecognizer` to the `Image` in it's `GestureRecognizers` collection. Set the `Tapped` event to "OnTranslateSpeechToText". We will create this event handler next.
+7. Add a `TapGestureRecognizer` to the `Image` in it's `GestureRecognizers` collection. Set the `Tapped` event to "OnTranslateSpeechToText". This method already exists, we'll look at it next.
 
 ```xml
 <Image Source="speech.png" Grid.Column="2">
@@ -621,8 +621,11 @@ You can then get the text from the `DisplayText` property of the returning objec
 
 8. Open the **MessagesView.xaml.cs** C# file.
 
-9. 
-
+9. At the bottom of the class, locate the `OnTranslateSpeechToText` method and examine it's implementation.
+	- It creates a new `SpeechTranslatorViewModel` to handle the speech translation event.
+	- It passes a delegate to the view model - this is called when the translation is finished or fails. In either case, it navigates backwards to destroy the **SpeechTranslatorPage**.
+	- Finally, it navigates to the **SpeechTranslatorPage** and sets the binding context to be the newly created VM.
+	- Once the navigation is complete, it starts recording by calling the `StartRecording` method on the ViewModel. This method has no implementation currently, so let's fix that.
 
 
 ### Add the required NuGet packages
