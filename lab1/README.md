@@ -27,9 +27,10 @@ In this first step, we will create a new Xamarin.Forms application using the Vis
 5.  Enter **"Minutes"** in the **Name** field.
 
 6.  Enter a folder in the **Location** field.
-	> **Note:** On Windows, we recommend using a folder close to the root of your drive to avoid path-length issues.
 
 ![Select the Cross-Platform App template](media/image1.png)
+
+> **Note:** On Windows, we recommend using a folder close to the root of your drive to avoid path-length issues.
 
 7.  Click the **OK** button.
 
