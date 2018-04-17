@@ -22,12 +22,13 @@ namespace MyCircle.Services
                 Text = "Welcome to Your Circle!",
                 Color = "Orange"
             });
-
-            LoopAddingData();
         }
 
         public Task<IEnumerable<CircleMessage>> GetRootsAsync()
         {
+            // Each time we refresh, add a few new entries.
+            AddRandomData();
+
             return Task.FromResult(items
                 .Where(n => n.IsRoot)
                 .OrderByDescending(n => n.CreatedDate)
@@ -57,16 +58,14 @@ namespace MyCircle.Services
         }
 
         #region TestData
-
-        [Conditional("DEBUG")]
-        private async void LoopAddingData()
+        private void AddRandomData()
         {
-            while (true)
-            {
-                await Task.Delay(rnd.Next(10000));
+            int count = 1 + rnd.Next(10);
 
+            for (int i = 0; i < count; i++)
+            {
                 string parent = null;
-                if (rnd.Next(10) % 5 == 0)
+                if (rnd.Next(100) % 5 == 0)
                 {
                     parent = items[rnd.Next(items.Count - 1)].ThreadId;
                 }
