@@ -60,5 +60,21 @@ namespace MyCircle
         {
             tapHandler?.Invoke(sender, e);
         }
+
+        async void OnTranslateSpeechToText(object sender, EventArgs e)
+        {
+            if (!messageEntry.IsEnabled) return;
+
+            var vm = new SpeechTranslatorViewModel(async s => {
+                if (!string.IsNullOrWhiteSpace(s))
+                {
+                    messageEntry.Text = s;
+                }
+                await Navigation.PopModalAsync();
+            });
+
+            await Navigation.PushModalAsync(new SpeechTranslatorPage() { BindingContext = vm });
+            await vm.StartRecording().ConfigureAwait(false);
+        }        
     }
 }

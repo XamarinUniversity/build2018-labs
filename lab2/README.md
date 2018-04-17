@@ -463,7 +463,7 @@ We will be using two NuGet based plug-ins for this:
 
 2. [Plugin.SpeechToText](https://www.nuget.org/packages/Plugin.SpeechToText/0.1.0-beta) to call Azure and translate the recorded speech to text using the [Bing Speech API](https://azure.microsoft.com/en-us/services/cognitive-services/speech/). Note that while the Azure service supports multiple languages, this specific component only works for spoken English.
 
-We are using this component to access the Bing Speech to Text service only for convenience since it's mostly boiler plate code, but it's useful to look at the technique used. If you want to just jump adding the speech support to the app, you can [skip directly to that step](#add-the-required-nuget-packages).
+We are using this component to access the Bing Speech to Text service only for convenience since it's mostly boiler plate code, but it's useful to look at the technique used. If you want to just jump adding the speech support to the app, you can [skip directly to that step](#add-recording-support-to-the-ui).
 
 ### Working with Bing Speech to Text service
 
@@ -571,14 +571,92 @@ async Task<SpeechToTextResult> SendRequestAsync(Stream mediaStream, string authT
 
 You can then get the text from the `DisplayText` property of the returning object.
 
+### Add recording support to the UI
+
+1. Open the `MessagesView.xaml` UI definition.
+
+2. Scroll to the bottom and locate the `Entry` with the name `messageEntry`. We want to place an icon next to this field.
+
+3. Surround the `Entry` in a `Grid`.
+
+```xml
+...
+	<Grid>
+		<Entry x:Name="messageEntry" ... />
+	</Grid>
+</StackLayout>
+```
+
+4. Move the `Margin` property off the `Entry` and add it to the new `Grid`.
+
+5. Add three columns to the `Grid`:
+	- `Width` = *
+	- `Width` = 10
+	- `Width` = Auto
+
+```xml
+<Grid Margin="20">
+    <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="10" />
+        <ColumnDefinition Width="Auto" />
+    </Grid.ColumnDefinitions>
+    ...
+</Grid>
+```
+
+6. Add an `Image` after the `Entry` (inside the `Grid`).
+	- Set the `Source` property to "speech.png"
+	- Set the `Grid.Column` property to "2".
+
+7. Add a `TapGestureRecognizer` to the `Image` in it's `GestureRecognizers` collection. Set the `Tapped` event to "OnTranslateSpeechToText". We will create this event handler next.
+
+```xml
+<Image Source="speech.png" Grid.Column="2">
+    <Image.GestureRecognizers>
+        <TapGestureRecognizer Tapped="OnTranslateSpeechToText" />
+    </Image.GestureRecognizers>
+</Image>
+```
+
+8. Open the **MessagesView.xaml.cs** C# file.
+
+9. 
+
+
+
 ### Add the required NuGet packages
 
+Let's switch back to our mobile app - you can integrate the above code if you like, but for the sake of time, we'll use some pre-built NuGet packages in these instructions.
+
+1. Open the NuGet manager for the solution (or per-project if you are using Visual Studio for Mac).
+
+2. Check the **Include prerelease** checkbox.
+
+3. Add a reference to **Xam.Plugin.SimpleAudioRecorder** to all the projects.
+
+4. Add a reference to **Plugin.SpeechToText** to all the projects.
+
+### Add code to start recording
+
+1. Expand the **ViewModels** folder in the **MyCircle** shared-code project in the Solution Explorer.
+
+2. Locate the **SpeechTranslatorViewModel.cs** file and open it.
+
+3. In the source file, locate the `StartRecording` method.
+
+4. Just above the method, add a new field of type `Plugin.SimpleAudioRecorder.ISimpleAudioRecorder` named **recorder**.
+
+5. In the `StartRecording` method, create a new recorder object by calling the static `CrossSimpleAudioRecorder.CreateSimpleAudioRecorder()` method. Assign the return value to the **recorder** field.
+
+6. Check the `CanRecordAudio` property on the **recorder** object to see if the device has recording capabilities.
+
+7. If so, call the `RecordAsync` method. Since it returns a `Task`, use the `await` keyword to properly wait on the result.
+
+8. If recording is not possible, call the **finishedCallback** delegate and pass a `null` value - this will cancel the recording in the UI and return you to the main screen.
 
 
 
-1. Add Xam.Plugin.SimpleAudioRecorder (pre-release)
-2. Add Xam.Plugin.SpeechToText (myget)
-   - need to add feed: https://www.myget.org/F/speech-to-text/api/v2
    - Key: fb3c4e67a81242f794cb56ebb279271d
 3. Add code to SpeechTranslatorViewModel.cs
 4. Add permissions to UWP project (appxmanifest - Capabilities - Microphone)
