@@ -888,11 +888,88 @@ public async Task StartRecording()
 }
 ```
 
+### Run the app
 
-## Part3
+1. Run the application on one of the supported plaforms.
 
-1. Add Microsoft.Azure.Mobile.Client.SQLiteStore to all projects
-2. Add VC2015 runmtime lib to UWP app
+2. Tap the microphone icon to begin recording.
+
+3. Say something in English.
+
+4. Tap the **Submit** button to send the speech to Azure.
+
+5. See the results in the `Entry`.
+
+## Part 3: Add Offline sync
+
+As a final step in this lab, we will solve a common issue with mobile device - lack of network reliability and/or connectivity.
+
+We will do this by adding support for a local cache of the `CircleMessages` that you can work with in a disconnected fashion, and then synchronize any changes made back to the cloud storage once network connectivity is restored.
+
+This is a built in feature of the Azure App Mobile App Service platform we are using.
+
+### Add the required NuGet package
+
+1. Using the NuGet package manager UI, add the [Microsoft.Azure.Mobile.Client.SQLiteStore](https://www.nuget.org/packages/Microsoft.Azure.Mobile.Client.SQLiteStore/) package to all projects.
+
+This package also includes a dependency against SQLite which is supported by all our platforms - however, for UWP we need to add one more runtime requirement: the Visual C++ 2015 runtime.
+
+2. Expand the **MyCircle.UWP** project in the Solution Explorer.
+
+3. Right click on the **References** folder and select **Add Reference...**.
+
+4. Select **Universal Windows > Extensions** in the dialog left-hand pane.
+
+5. Add a checkmark next to the **Visual C++ 2015 Runtime for Universal Windows** entry.
+
+![UWP VC++ runtime](media/image14.png)
+
+### Initialize the offline cache
+
+Support for offline caching is provided through SQLite, but it requires us to initialize the library a bit differently, and to use a different table interface implementation: `IMobileServiceSyncTable<T>`.
+
+1. Open the **Services/AzureMessageRepository.cs** file in the **MyCircle** shared-code project.
+
+2. Remove the call to `GetTable<CircleMessage>` in the constructor.
+
+3. Change the `IMobileServiceTable<CircleMessage>` **messages** field to be a `IMobileServiceSyncTable<CircleMessage>` instead. This is the interface which supports offline synchronization.
+
+4. Add a new method to the class named `InitalizeTableAsync` which returns a `Task` and takes no parameters.
+
+5. In the method, check whether **messages** has been initialized (null or not).
+
+6. If null, we need to do our one-time initialization (per launch). First, create a new local variable in the method of type `MobileServiceSQLiteStore`. Store it in a variable named **store** and pass it a filename - the instructions here will use "offlinecache.db".
+
+7. Next, call `DefineTable<CircleMessage>()` on the **store** object to define the shape of the offline table from our model object.
+
+8. Next, call `client.SyncContext.InitializeStore` passing the **store** object - this will initialize the offline support through an intermediary built-in class named the "SyncContext".
+
+9. Finally, call `GetSyncTable<CircleMessage>` on the **client** field to retrieve the new synchronization table and assign it to the **messages** field.
+
+```csharp
+public sealed class AzureMessageRepository ...
+{
+	...
+    IMobileServiceSyncTable<CircleMessage> messages;
+
+    public AzureMessageRepository()
+    {
+        client = new MobileServiceClient(AzureServiceUrl);
+    }
+
+    Task InitializeTableAsync()
+    {
+        if (messages == null)
+        {
+            messages = client.GetSyncTable<CircleMessage>();
+        }
+    }
+    ...
+}
+```
+
+
+
 2. Need a parameterless ctor on CircleMessage!
 3. Add InitializeTableAsync, InitializeOfflineStorageAsync, and SynchronizeAsync to Azure repo
 4. Call Synchronize in each method.

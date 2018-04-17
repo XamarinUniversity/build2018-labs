@@ -26,8 +26,17 @@ namespace MyCircle.Services
         {
             if (messages == null)
             {
-                await InitializeOfflineStorageAsync();
+                // Define the database schema
+                var store = new MobileServiceSQLiteStore("offlinecache.db");
+                store.DefineTable<CircleMessage>();
+
+                // Create the DB file
+                await client.SyncContext.InitializeAsync(store).ConfigureAwait(false);
+
+                // Get the sync table
                 messages = client.GetSyncTable<CircleMessage>();
+
+                // Purge any records
                 await PurgeOldRecordsAsync(/*true*/);
             }
         }
@@ -44,19 +53,6 @@ namespace MyCircle.Services
             {
                 await messages.PurgeAsync(force: true);
                 await PullChangesAsync(true).ConfigureAwait(false);
-            }
-        }
-
-        async Task InitializeOfflineStorageAsync()
-        {
-            if (!client.SyncContext.IsInitialized)
-            {
-                // Define the database schema
-                var store = new MobileServiceSQLiteStore("offlinecache.db");
-                store.DefineTable<CircleMessage>();
-
-                // Create the DB file
-                await client.SyncContext.InitializeAsync(store).ConfigureAwait(false);
             }
         }
 
