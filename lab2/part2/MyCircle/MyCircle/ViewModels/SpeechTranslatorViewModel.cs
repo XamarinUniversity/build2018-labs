@@ -38,7 +38,6 @@ namespace MyCircle.ViewModels
         }
 
         ISimpleAudioRecorder recorder;
-        const string SpeechApiKey = "fb3c4e67a81242f794cb56ebb279271d";
 
         public async Task StartRecording()
         {
@@ -86,16 +85,18 @@ namespace MyCircle.ViewModels
             return status == PermissionStatus.Granted;
         }
 
+        const string SpeechApiKey = "fb3c4e67a81242f794cb56ebb279271d";
+
         private async Task OnStopRecording()
         {
             IsTranslating = true;
 
             // TODO: stop recording
-            var result = await recorder.StopAsync();
+            var recorderResult = await recorder.StopAsync();
 
             // TODO: submit text to Azure
-            SpeechToText client = new SpeechToText(SpeechApiKey);
-            var speechResult = await client.RecognizeSpeechAsync(result.GetFilePath());
+            SpeechToText speechClient = new SpeechToText(SpeechApiKey);
+            var speechResult = await speechClient.RecognizeSpeechAsync(recorderResult.GetFilePath());
 
             // End the screen.
             finishedCallback(speechResult.DisplayText);

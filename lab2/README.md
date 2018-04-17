@@ -463,7 +463,9 @@ We will be using two NuGet based plug-ins for this:
 
 2. [Plugin.SpeechToText](https://www.nuget.org/packages/Plugin.SpeechToText/0.1.0-beta) to call Azure and translate the recorded speech to text using the [Bing Speech API](https://azure.microsoft.com/en-us/services/cognitive-services/speech/). Note that while the Azure service supports multiple languages, this specific component only works for spoken English.
 
-We are using this component to access the Bing Speech to Text service only for convenience since it's mostly boiler plate code, but it's useful to look at the technique used. If you want to just jump adding the speech support to the app, you can [skip directly to that step](#add-recording-support-to-the-ui).
+We are using this component to access the Bing Speech to Text service only for convenience since it's mostly boiler plate code, but it's useful to look at the technique used. 
+
+You will need a Bing Speech to Text API key which can be obtained using [these instructions](#get-an-api-key), but once you have that, if you want to just jump adding the speech support to the app, you can [skip directly to that step](#add-recording-support-to-the-ui).
 
 ### Working with Bing Speech to Text service
 
@@ -590,9 +592,9 @@ You can then get the text from the `DisplayText` property of the returning objec
 4. Move the `Margin` property off the `Entry` and add it to the new `Grid`.
 
 5. Add three columns to the `Grid`:
-	- `Width` = *
-	- `Width` = 10
-	- `Width` = Auto
+	- Star-sized
+	- 10 unites
+	- Auto sized
 
 ```xml
 <Grid Margin="20">
@@ -606,7 +608,7 @@ You can then get the text from the `DisplayText` property of the returning objec
 ```
 
 6. Add an `Image` after the `Entry` (inside the `Grid`).
-	- Set the `Source` property to "speech.png"
+	- Set the `Source` property to "speech.png". This icon is already present in the platform-specific projects.
 	- Set the `Grid.Column` property to "2".
 
 7. Add a `TapGestureRecognizer` to the `Image` in it's `GestureRecognizers` collection. Set the `Tapped` event to "OnTranslateSpeechToText". This method already exists, we'll look at it next.
@@ -622,15 +624,48 @@ You can then get the text from the `DisplayText` property of the returning objec
 8. Open the **MessagesView.xaml.cs** C# file.
 
 9. At the bottom of the class, locate the `OnTranslateSpeechToText` method and examine it's implementation.
-	- It creates a new `SpeechTranslatorViewModel` to handle the speech translation event.
-	- It passes a delegate to the view model - this is called when the translation is finished or fails. In either case, it navigates backwards to destroy the **SpeechTranslatorPage**.
-	- Finally, it navigates to the **SpeechTranslatorPage** and sets the binding context to be the newly created VM.
-	- Once the navigation is complete, it starts recording by calling the `StartRecording` method on the ViewModel. This method has no implementation currently, so let's fix that.
 
+```csharp
+async void OnTranslateSpeechToText(object sender, EventArgs e)
+{
+    if (!messageEntry.IsEnabled) return;
+
+    var vm = new SpeechTranslatorViewModel(async s => {
+        if (!string.IsNullOrWhiteSpace(s))
+        {
+            messageEntry.Text = s;
+        }
+        await Navigation.PopModalAsync();
+    });
+
+    await Navigation.PushModalAsync(new SpeechTranslatorPage() { BindingContext = vm });
+    await vm.StartRecording().ConfigureAwait(false);
+}
+```
+
+- It checks to see if the UI is currently busy refreshing (the `Entry` field is disabled in this case).
+- It creates a new `SpeechTranslatorViewModel` to handle the speech translation event.
+- It passes a delegate to the view model - this is called when the translation is finished or fails. In either case, it navigates backwards to destroy the **SpeechTranslatorPage**.
+- Finally, it navigates to the **SpeechTranslatorPage** and sets the binding context to be the newly created VM.
+- Once the navigation is complete, it starts recording by calling the `StartRecording` method on the ViewModel. This method has no implementation currently, so let's fix that.
+
+### Test the Recording UI
+
+1. Run the app on one of the supported platforms.
+
+2. On the main and details screen, you should see a new microphone icon next to the "Enter Message" entry.
+
+![New microphone icon](media/image11.png)
+
+3. Tapping on the icon will present a new screen we've not seen before.
+
+![Recording screen](media/image12.png)
+
+4. Tapping on the **Submit** button will stop the recording and submit it to Azure for translation. Then the screen will automatically go back to where you started - filling in the `Entry` with your translated text.
+
+Currently, the behavior is mocked out in the **SpeechTranslatorViewModel** file, let's add in the real support.
 
 ### Add the required NuGet packages
-
-Let's switch back to our mobile app - you can integrate the above code if you like, but for the sake of time, we'll use some pre-built NuGet packages in these instructions.
 
 1. Open the NuGet manager for the solution (or per-project if you are using Visual Studio for Mac).
 
@@ -656,51 +691,203 @@ Let's switch back to our mobile app - you can integrate the above code if you li
 
 7. If so, call the `RecordAsync` method. Since it returns a `Task`, use the `await` keyword to properly wait on the result.
 
-8. If recording is not possible, call the **finishedCallback** delegate and pass a `null` value - this will cancel the recording in the UI and return you to the main screen.
+8. If recording is not possible, call the **finishedCallback** delegate and pass a `null` value - as you saw earlier in the implementation for `OnTranslateSpeechToText`, this will cancel the recording in the UI and return you to the main screen.
 
+```csharp
+ISimpleAudioRecorder recorder;
 
-
-   - Key: fb3c4e67a81242f794cb56ebb279271d
-3. Add code to SpeechTranslatorViewModel.cs
-4. Add permissions to UWP project (appxmanifest - Capabilities - Microphone)
-5. Add permission to iOS info.plist (hand edit)
-	<key>NSMicrophoneUsageDescription</key>
-  	<string>Record my voice for Speech to Text</string>
-6. Add permissions to Android Manifest
-	- MODIFY_AUDIO_SETTINGS, RECORD_AUDIO, READ_EXTERNAL_STORAGE & WRITE_EXTERNAL_STORAGE
-7. Add Plugin.Permissions component to all projects.
-8. Add Android permissions pieces to MainActivity
-	- CrossCurrentActivity.Current.Activity = this; // OnCreate
-	- OnRequestPermissions
-9. Add code to request mic permission into ViewMOdel
-10. Call method from OnStartRecording
-
+public async Task StartRecording()
+{
+    recorder = CrossSimpleAudioRecorder.CreateSimpleAudioRecorder();
+    if (recorder.CanRecordAudio)
+    {
+        await recorder.RecordAsync().ConfigureAwait(false);
+    }
+    else
+    {
+        finishedCallback(null);
+    }
+}
 ```
+
+### Add code to stop recording
+
+1. In the **SpeechTranslatorViewModel.cs** file, find the `OnStopRecording` method. This is called when the **STOP** button is tapped in the UI.
+
+2. Remove the `Task.Delay(2500);` line and replace it with a call to `StopAsync` on the **recorder** field. Cache off the result in a local variable named **recorderResult**.
+
+```csharp
+private async Task OnStopRecording()
+{
+	IsTranslating = true;
+
+	// TODO: stop recording
+	var recorderResult = await recorder.StopAsync();
+	...
+}
+```
+
+3. Instantiate a new `Plugin.SpeechToText.SpeechToText` object, passing it your [Speech API key](#get-an-api-key). Use the `await` keyword and name the resulting object **speechClient**.
+
+4. Remove the dummy string result (**text**).
+
+5. Call the `RecognizeSpeechAsync` method on the **speechClient** object - this takes the media file which is available from the **recorderResult.GetFilePath()** method.
+
+6. Save the result from the `RecognizeSpeechAsync` call into a local variable named **speechResult**. Apply the `await` keyword to easily retrieve the task-based return value.
+
+```csharp
+// TODO: submit text to Azure
+SpeechToText speechClient = new SpeechToText(SpeechApiKey);
+var speechResult = await speechClient.RecognizeSpeechAsync(
+	                            recorderResult.GetFilePath());
+```
+
+7. Pass the `speechResult.DisplayText` property to the **finishedCallback** delegate to close the screen and finish the recording/translation.
+
+8. Run the app on one of the available platforms. Try going through the recording screens. 
+
+> What happened? Do you have any guesses why it doesn't work? 
+
+### Request permission to use the microphone
+
+It would be a huge privacy issue if your devices could record you indiscriminately without your knowledge. That's why our recording code isn't working yet - it either fails at runtime, or gets ignored by the platform.
+
+We need to do two things.
+
+1. Add a permissions declaration into the app. This is a notification that the app _might_ use the given requested feature.
+
+2. Request to use the microphone at runtime. This is an active UI request informing the user that we'd like to record them. For most platforms, the user has to explicitly allow this the first time and they can, in most cases, remove permissions later on through system settings on the device.
+
+Unfortunately, each platform has slightly different requirements. So we'll go through each one and then add a NuGet package to easily _request_ the user's permission at runtime in a cross-platform way.
+
+#### Android
+
+1. Open the project properties for the **MyCircle.Android** project. 
+
+2. In the GUI, select the **Android Manifest** section.
+
+3. Locate the **Required Permissions** section of the page.
+
+4. Check the following permissions in the dialog. Note you can _search_ for a permission through the edit field above the list.
+	- RECORD_AUDIO
+	- READ_EXTERNAL_STORAGE
+	- MODIFY_AUDIO_SETTINGS
+	- WRITE_EXTERNAL_STORAGE
+
+![Android Permissions](media/image13.png)
+
+
+#### iOS
+
+1. Expand the **MyCircle.iOS** project in the Solution Explorer.
+
+2. Locate the **info.plist** file in the project.
+
+3. Right-click on the file and select **Open With...** and select **XML (Text) Editor** from the dialog.
+
+4. Go to the bottom of the file, right before the closing `</dict>` tag, add the following two lines to request microphone usage:
+
+```xml
+<key>NSMicrophoneUsageDescription</key>
+<string>Record my voice for Speech to Text</string>
+```
+
+#### UWP
+
+1. Expand the **MyCircle.UWP** project in the Solution Explorer.
+
+2. Locate the **package.appxmanifest** file and double-click on it to open it in the editor.
+
+3. Switch to the **Capabilities** tab.
+
+4. Locate the **Microphone** capability and make sure it's checked.
+
+#### Request user permission at runtime
+
+The last step is to request user permissions from the platforms that require it (iOS and Android). We will do this using another NuGet package that makes this a bit easier.
+
+1. Add the NuGet package [Plugin.Permissions](https://www.nuget.org/packages/Plugin.Permissions/) to all the projects.
+
+2. Expand the **MyCircle.Android** project in the Solution Explorer.
+
+3. Add the following code into the `MainActivity` class:
+
+```csharp
+using Plugin.Permissions;
+
+...
+
+public override void OnRequestPermissionsResult(
+	   int requestCode, string[] permissions, 
+	   [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
+{
+    base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+    PermissionsImplementation.Current.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+}
+```
+
+4. Next, locate the `OnCreate` override in the class and add the following line just before the call to `Forms.Init`:
+
+```csharp
+using Plugin.CurrentActivity;
+
+public class MainActivity : ...
+{
+   protected override void OnCreate(Bundle bundle)
+   {
+      ...
+      base.OnCreate(bundle);
+      CrossCurrentActivity.Current.Activity = this;
+      ...
+  }
+}
+```
+
+5. Finally, switch back to the **SpeechTranslatorViewModel.cs** file in the **MyCircle** project and add the following method to the class:
+
+```csharp
 private async Task<bool> RequestAudioPermissions()
 {
+    if (Device.RuntimePlatform == Device.macOS)
+        return true;
+
+    PermissionStatus status = PermissionStatus.Unknown;
+
     try
     {
-        var status = await CrossPermissions.Current.CheckPermissionStatusAsync(Permission.Microphone);
-
-        if (await CrossPermissions.Current.ShouldShowRequestPermissionRationaleAsync(Permission.Microphone))
+        status = await CrossPermissions.Current.CheckPermissionStatusAsync(Permission.Microphone);
+        if (status != PermissionStatus.Granted)
         {
-            var results = await CrossPermissions.Current.RequestPermissionsAsync(Permission.Microphone);
-            if (results.ContainsKey(Permission.Microphone))
-                status = results[Permission.Microphone];
-
-            if (status == PermissionStatus.Granted)
+            if (await CrossPermissions.Current.ShouldShowRequestPermissionRationaleAsync(Permission.Microphone))
             {
-                return true;
+                var results = await CrossPermissions.Current.RequestPermissionsAsync(Permission.Microphone);
+                if (results.ContainsKey(Permission.Microphone))
+                    status = results[Permission.Microphone];
             }
         }
     }
     catch
     {
-
     }
-    return false;
+
+    return status == PermissionStatus.Granted;
 }
 ```
+
+6. Locate the `StartRecording` method you worked on earlier and add a call to request audio permissions as the first step in the method. If it returns `false`, invoke the **finishedCallback** with a `null` parameter to close the recording UI since the user denied the request.
+
+```csharp
+public async Task StartRecording()
+{
+	if (!await RequestAudioPermissions())
+	{
+	    finishedCallback(null);
+	    return;
+	}
+	...
+}
+```
+
 
 ## Part3
 
