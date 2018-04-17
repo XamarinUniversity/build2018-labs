@@ -549,21 +549,23 @@ Here's a simple example of calling the REST API to translate a **.wav** file pas
 ```csharp
 async Task<SpeechToTextResult> SendRequestAsync(Stream mediaStream, string authToken)
 {
-	string url = "https://speech.platform.bing.com/speech/recognition/dictation/cognitiveservices/v1?language=en-us&format=simple";
+	string url = "https://speech.platform.bing.com/speech/recognition/dictation/cognitiveservices/v1" + 
+		"?language=en-us&format=simple";
 
 	HttpClient client = new HttpClient();
 	client.DefaultRequestHeaders.Authorization = 
-	   new AuthenticationHeaderValue("Bearer", authToken);
+	  new AuthenticationHeaderValue("Bearer", authToken);
 
 	// Define the media we want to translate.
 	var content = new StreamContent(mediaStream);
-    content.Headers.TryAddWithoutValidation(
-    	"Content-Type", @"audio/wav; codec=""audio/pcm""; samplerate=16000");
+	content.Headers.TryAddWithoutValidation(
+		"Content-Type", 
+		"audio/wav; codec=\audio/pcm\"; samplerate=16000");
 
-   var response = await httpClient.PostAsync(url, content);
-   var jsonText = await response.Content.ReadAsStringAsync();
+	var response = await httpClient.PostAsync(url, content);
+	var jsonText = await response.Content.ReadAsStringAsync();
 
-   return JsonConvert.DeserializeObject<SpeechToTextResult>(jsonText);
+	return JsonConvert.DeserializeObject<SpeechToTextResult>(jsonText);
 }
 ```
 
