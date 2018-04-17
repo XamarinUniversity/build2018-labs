@@ -268,7 +268,7 @@ In this first part, we will replace our test `InMemoryRepository` class with an 
 
 3. Add the package to each project in the solution - on Visual Studio for Windows you can do this in one step, on macOS you will need to do it one at a time.
 
-![NuGet on Windows](media/image10.png)
+![NuGet on Windows](media/image9.png)
 
 ### Examine the IAsyncMessageRepository interface
 
@@ -420,9 +420,11 @@ public static IAsyncMessageRepository Repository = new AzureMessageRepository();
 
 You could run the app now, but it will have a runtime failure. The problem is that our `CircleMessage` definition doesn't _quite_ match the server implementation. There are two things we need to do to it.
 
-1. The server should be assigning the primary key (`Id`). Currently, our code is doing that.
+1. The server should be assigning the primary key (`Id`) and creation date. Currently, our code is doing that in the `CircleMessage` constructor. That code needs to be removed.
 
 2. The server uses the name `CreatedAt` to hold the creation date as a `DateTimeOffset?` - this is a _hardcoded_ field in Azure and our client must conform either by changing the property name, or applying a `JsonProperty` attribute to change the network representation.
+
+3. Make the necessary changes - make sure to use the built-in class rename feature to rename the `CreatedDate` field to `CreatedTo` - so you catch all usages. In addition, make sure to change the field type from `DateTime` to `DateTimeOffset?`.
 
 Here's the correct definition of our `CircleMessage`:
 
@@ -450,6 +452,124 @@ public class CircleMessage
 3. You can respond to messages.
 
 4. If you close the app and reopen it, you should still see your messages.
+
+## Part 2: Add Speech Services
+
+Now that we have our app talking to Azure, let's utilize another Azure service to give some more features to the app - translating speech into text.
+
+We will be using two NuGet based plug-ins for this:
+
+1. [Xam.Plugin.SimpleAudioRecorder](https://www.nuget.org/packages/Xam.Plugin.SimpleAudioRecorder/0.3.0-beta) to record audio on the device in a cross-platform fashion. This component is open source and you can check out the implementation [here](https://github.com/adrianstevens/Xamarin-Plugins).
+
+2. [Plugin.SpeechToText](https://www.nuget.org/packages/Plugin.SpeechToText/0.1.0-beta) to call Azure and translate the recorded speech to text using the [Bing Speech API](https://azure.microsoft.com/en-us/services/cognitive-services/speech/). Note that while the Azure service supports multiple languages, this specific component only works for spoken English.
+
+We are using this component to access the Bing Speech to Text service only for convenience since it's mostly boiler plate code, but it's useful to look at the technique used. If you want to just jump adding the speech support to the app, you can [skip directly to that step](#add-the-required-nuget-packages).
+
+### Working with Bing Speech to Text service
+
+The Bing Speech to Text service is a REST-based web service that takes a media stream, passed in the body of the request, and returns the textual representation of the spoken words.
+
+There is a .NET SDK which can be used for desktop applications, however it relies on some C++ code which makes it non-portable to mobile platforms.
+
+There is also a .NET-based service library - but this is intended only for server-side use as it allows for long-authenticated requests.
+
+Mobile apps are recommended to use the REST service directly which is located at https://speech.platform.bing.com/speech/recognition/.
+
+There are two steps involved in translating a media file.
+
+1. Get an authentication token.
+2. Submit a translation request.
+
+#### Get an API key
+
+All the cognitive services (vision, speech, search, etc.) use shared API keys ("secrets") to validate access to the service. You must request a key in order to gain access to each service you want to use.
+
+There are two ways to get an API key. You can get the Free/Trial key which allows for 5k transactions at 20/minute. Or you can tie the key to an Azure subscription for higher load.
+
+In this case, we'll use the free/trial key, but you can log into the [Azure Portal](https://portal.azure.com) to request a full paid key.
+
+1. Open a browser and go to https://azure.microsoft.com/en-us/try/cognitive-services/
+
+2. Select **Speech** as the API.
+
+3. Click **Get API Key** on the Bing Speech API entry.
+
+4. Agree to the terms and login to a Microsoft account to assign the free key.
+
+5. It will then take you to the Cognitive Services API page, scroll down to fine the **Bing Speech API**. It will contain two API keys (primary/secondary). Copy down the primary key.
+
+![API Key page](media/image10.png)
+
+#### Authenticate to the Cognitive service API
+
+The Bing Speech to Text REST API uses an authentication endpoint located at https://api.cognitive.microsoft.com/sts/v1.0/issueToken to issue temporary access tokens valid for 10 minutes. 
+
+You get a token by calling the authentication endpoint, passing the API key as a header value for the `Ocp-Apim-Subscription-Key` key. The returned data will either be an error, or a valid authentication token to access the service - valid for 10 minutes.
+
+Here's an example of getting the access token given the API key obtained from the Azure portal:
+
+```csharp
+async Task<string> GetAuthenticationToken(string apiKey)
+{
+	HttpClient client = new HttpClient();
+	httpClient.DefaultRequestHeaders.Add(
+		 "Ocp-Apim-Subscription-Key", apiKey);
+
+	var uriBuilder = new UriBuilder("https://api.cognitive.microsoft.com/sts/v1.0/issueToken");
+
+    var result = await httpClient.PostAsync(
+    	uriBuilder.Uri.AbsoluteUri, null);
+    return await result.Content.ReadAsStringAsync();
+}
+```
+
+#### Translating Speech to Text
+
+The Speech to Text API takes a **WAV** formatted file (only PCM Mono 16k encoding is supported) and translates it to a string.
+
+You send a `POST` request to https://speech.platform.bing.com/speech/recognition/dictation/cognitiveservices/v1 with a few query string parameters to indicate the format and language to expect.
+
+The request will be denied unless a valid bearer access token (obtained above) is passed in the HTTP Authorization header.
+
+The API returns a JSON object with the following format (**Note**: we are using a JSON.net attribute to make sure the network name for the object is "result"):
+
+```csharp
+[JsonObject("result")]
+public class SpeechToTextResult
+{
+    public string RecognitionStatus { get; set; }
+    public string DisplayText { get; set; }
+    public string Offset { get; set; }
+    public string Duration { get; set; }
+}
+```
+
+Here's a simple example of calling the REST API to translate a **.wav** file passed in as a `Stream` along with an auth token obtained using the code above.
+
+```csharp
+async Task<SpeechToTextResult> SendRequestAsync(Stream mediaStream, string authToken)
+{
+	string url = "https://speech.platform.bing.com/speech/recognition/dictation/cognitiveservices/v1?language=en-us&format=simple";
+
+	HttpClient client = new HttpClient();
+	client.DefaultRequestHeaders.Authorization = 
+	   new AuthenticationHeaderValue("Bearer", authToken);
+
+	// Define the media we want to translate.
+	var content = new StreamContent(mediaStream);
+    content.Headers.TryAddWithoutValidation(
+    	"Content-Type", @"audio/wav; codec=""audio/pcm""; samplerate=16000");
+
+   var response = await httpClient.PostAsync(url, content);
+   var jsonText = await response.Content.ReadAsStringAsync();
+
+   return JsonConvert.DeserializeObject<SpeechToTextResult>(jsonText);
+}
+```
+
+You can then get the text from the `DisplayText` property of the returning object.
+
+### Add the required NuGet packages
 
 
 
