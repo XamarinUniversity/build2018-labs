@@ -1,4 +1,4 @@
-# Build My First Xamarin App
+# Connect your mobile app to the cloud with Azure App Services
 
 In this walk-through, we will modify a Xamarin.Forms application to utilize a few Azure services. We will be working with three specific services:
 
@@ -19,7 +19,7 @@ The app we will be working with is a community chat application named **My Circl
 
 We will add this support in three stages:
 
-1. [Part 1](#Part-One-add-support-for-Azure) - We will add the initial support to connect our app to Azure App Services and store our data in the cloud.
+1. [Part 1](#part-one-add-support-for-azure) - We will add the initial support to connect our app to Azure App Services and store our data in the cloud.
 
 2. **Part 2** - We will add support for Azure Speech to Text cognitive services.
 
@@ -33,7 +33,7 @@ You can download the code [here](https://github.com/XamarinUniversity/build2018-
 git clone https://github.com/XamarinUniversity/build2018-labs.git
 ```
 
-There are two labs - you want to work with **Lab 2** for this walk-through.
+> **Note:** There are two labs in this Github repository, make sure you are working with the contents of the **lab2** folder for this walk-through.
 
 ## Explore the Starter Solution
 
@@ -48,6 +48,61 @@ Let's start by exploring the starter solution. In the materials associated with 
 
 > It is recommended that you _copy_ each folder to another local location, preferably one with a short path to avoid any path restrictions on your development system.
 
+1. Open the **MyCircle.sln** solution in the **start** folder.
+
+2. There are five projects in this solution:
+	- **MyCircle** - a .NET Standard shared-code project where all of our work will be done.
+	- **MyCircle.Android** - the Xamarin.Android host which runs the app on the Android platform.
+	- **MyCircle.iOS** - the Xamarin.iOS host which runs the app on the iPhone and iPad.
+	- **MyCircle.Mac** - the Xamarin.Mac host which runs the app on macOS.
+	- **MyCircle.UWP** - the Universal Windows host which runs the app on Windows 10.
+
+We will be concentrating on the first project. This is a .NET Standard library which has all the shared code and UI definitions for the app.
+
+![MyCircle project](media/image2.png)
+
+### Data Folder
+
+The **Data** folder holds model objects - these are underlying data objects which represent some state in our app. 
+
+The only model object we have defined is the `CircleMessage` which is used to represent a single message sent or received from the app. It holds the Author, Color, and Text for a single message.
+
+### Services Folder
+
+The **Services** folder holds global services used by the application to perform some work.
+
+| Service | Description |
+|---------|-------------|
+| `InMemoryRepository` | This is a sample in-memory implementation of the `IAsyncMessageRepository` interface. It is used in the starter to provide the storage for all the `CircleMessage` objects. We will replace this class in **part1** with a repository that connects to Azure. |
+| `LoginService` | This service provides the ability for a user to login and logout of the application. |
+| `UserInfo` | This service stores the currently logged on user in persistent storage using the built-in Xamarin.Forms properties collection. |
+
+### ViewModels Folder
+
+The app relies on the [Model-View-ViewModel design pattern](https://docs.microsoft.com/en-us/xamarin/xamarin-forms/enterprise-application-patterns/mvvm) to provide bindable view-centric data objects for the UI to display. The **ViewModels** folder defines each of our bindable ViewModels.
+
+| ViewModel | Description |
+|-----------|-------------|
+| `BasePageViewModel` | A base class for `MainViewModel` and `DetailsViewModel` which have some shared functionality. In particular, this class supports adding a new `CircleMessage` to the system and providing a collection of `CircleMessageViewModel` objects for the UI to display. |
+| `CircleMessageViewModel` | A bindable wrapper around the `CircleMessage` data model. |
+| `DetailsViewModel` | The ViewModel for the `DetailsPage` |
+| `LoginViewModel` | The ViewModel for the `LoginPage` |
+| `MainViewModel` | The ViewModel for the `MainPage` |
+| `ProfileColorViewModel` | A ViewModel to hold a `Color` and current selection used in the `LoginPage` |
+| `SpeechTranslatorViewModel` | A ViewModel for the `SpeechTranslatorPage` |
+
+### XAML User Interface definitions
+
+The app uses [XAML](https://docs.microsoft.com/en-us/xamarin/xamarin-forms/xaml/xaml-basics/) to construct and display the user interface for each page. Each XAML file has a corresponding code-behind (**xam.cs**) file, which may have a little connecting logic in it, particularly for navigation. However, most of the programmed logic is contained in the [ViewModels Folder](#viewmodels-folder).
+
+| XAML | Description |
+|------|-------------|
+| **App.xaml** | The main `Application` for the app - this is a singleton which is created as part of the app launch sequence and is the starting point for the app. |
+| **DetailsPage.xaml** | This page displays the thread details for a conversation. At the top is the starting point, and then each response is displayed in a scrollable list. |
+| **LoginPage.xaml** | This page is the first displayed UI in the app when the app has not been launched before. It allows the user to enter their name and select a color for their messages. You can also reach this app by tapping the Logout button on the main page. |
+| **MainPage.xaml** | This page is the primary page which displays all the "root" conversations - these are starting points for any conversation thread. You can tap on a specific message to display the details. |
+| **MessagesView.xaml** | This is a `ContentView` which is shared between the **MainPage.xaml** and **DetailsPage.xaml** to display a list of messages and a "New Message" `Entry` UI widget. |
+| **SpeechTranslatorPage.xaml** | This is a starting point for the UI related to **part2** of the lab. It is incomplete and will be utilized as part of that step. |
 
 
 
