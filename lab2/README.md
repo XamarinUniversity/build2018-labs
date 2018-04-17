@@ -138,9 +138,121 @@ The app uses [XAML](https://docs.microsoft.com/en-us/xamarin/xamarin-forms/xaml/
 
 10. You can tap on that message to see the details, or to enter your own response.
 
+## Create the Azure Mobile App Service
+
+Let's start by creating an Azure Mobile App Service that our mobile app can use to store data in the cloud. There is an existing version of this service located at https://build2018mycircle.azurewebsites.net, however it likely won't be around forever, so you can use these steps to create your own version of the service. 
+
+If you want to use the pre-supplied service, you can skip to [Part One](#part-one-add-support-for-azure) where we will add support for Azure to the app.
+
+> **Note**: at this time, this part of the lab can only be done on Visual Studio for Windows. Once you have the service, you can use Visual Studio for Mac; alternatively, you can create the service using the [Azure Portal](https://portal.azure.com).
+
+### Create the build2018mycircle solution
+
+1. Open Visual Studio for Windows.
+
+2. Use the **File** > **New** > **Project...** menu option to open the New Project wizard
+
+3. Select the **Visual C#** > **Web** > **ASP.NET Web Application (.NET Framework)** template.
+
+![New Web App](media/image7.png)
+
+4. Name the solution **build2018mycircle**.
+
+5. Click **OK** to start the wizard.
+
+
+### Set the web app options
+
+1. Select **Azure Mobile App** from the set of choices.
+
+2. Leave all other options as their defaults and click **OK** to create the web app.
+
+![Web Options](media/image8.png)
+
+### Change the default model to CircleMessage
+
+The wizard created a default data object (**TodoItem**) and controller (**TodoItemController**) to manage a table. You can either create a new controller + data item, or rename this one since we aren't going to use it. We'll choose the latter in this walk-through.
+
+1. Expand the **DataObjects** folder in the project.
+
+2. Locate the **TodoItem.cs** source file and open it.
+
+3. Right-click on the class name and select **Rename**. Type **CircleMessage** as the new class name.
+
+4. Rename the file in the Solution Explorer to match the new class name. An easy way to do this in VS for Windows is to use the **Quick Actions and Refactorings...** menu (accessible through a right-click on the class, or **CTRL+.**)
+
+5. Change the properties in the class definition to match our mobile app version of the definition:
+
+```csharp
+public class CircleMessage : EntityData
+{
+    public bool IsRoot { get; set; }
+    public string ThreadId { get; set; }
+    public string Author { get; set; }
+    public string Text { get; set; }
+    public string Color { get; set; }
+}
+```
+
+### Rename the TodoItemController
+
+1. Expand the Controllers folder in the Solution.
+
+2. Open the **TodoItemController.cs** file.
+
+3. Rename the class and file (using the same steps as above) to **CircleMessageController**.
+
+4. Go through the class and replace all text references of "Todo" with "CircleMessage". This mostly affects comments, but there are a few method names which are changed too. You can do a global rename within the class if you like - these methods aren't referenced in code anywhere but are instead dispatched through the ASP.NET MVC framework.
+
+### Rename the DbSet accessor
+
+1. Expand the **Models** folder in the Solution.
+
+2. Locate the **MobileServiceContext.cs** file and open it.
+
+3. In this file, locate the **TodoItems** property and rename it to **CircleMessageItems**.
+
+### Fix the MobileServiceInitializer
+
+1. Expand the **App_Start** folder in the Solution.
+
+2. Locate the **Startup.MobileApp.cs** file and open it.
+
+3. At the bottom you will find a class named `MobileServiceInitializer` with a `Seed` method. This method is used to initialize an empty database with an initial dataset.
+
+4. You can either replace the code with some default `CircleMessage` objects (just follow the same code pattern given for the `TodoItem` objects), or remove the method altogether if you don't want any initial data in the database.
+
+### Publish the service to Azure
+
+1. Build the service to make sure everything is renamed correctly.
+
+2. Right-click on the project in the Solution Explorer and select **Publish**.
+
+3. Select **App Service** from the side-bar, and **Create New** on the right side.
+
+4. Click **Create Profile** to start the service creation. This will load your available subscriptions in Azure. You will need to have an account (a free one is fine) and it will prompt you to create one or to login if you are not currently logged in.
+
+5. Give the app a name - this will become your URL which the mobile app will need to know.
+
+6. Pick the subscription group, resource group, and hosting plan.
+
+7. On the right side, click the **Create a SQL Database** link.
+
+8. Select or create a SQL Server to host your database - you will need the admin username and password.
+
+9. Click **OK** to add the database configuration.
+
+10. Click **Create** to publish the service - this will take a few minutes. When it's finished, your app will be running in Azure using the following URL:
+
+```
+https://<APPNAME>.azurewebsites.net
+```
+
 ## Part One: add support for Azure
 
-In this first part, we 
+In this first part, we will replace our test `InMemoryRepository` class with an Azure version that connects to an existing Azure Mobile App Service.
+
+
 
 1. Add Microsoft.Azure.Mobile.Client NuGet to all projects.
 2. Create AzureMessageRepository.cs
