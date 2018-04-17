@@ -104,9 +104,43 @@ The app uses [XAML](https://docs.microsoft.com/en-us/xamarin/xamarin-forms/xaml/
 | **MessagesView.xaml** | This is a `ContentView` which is shared between the **MainPage.xaml** and **DetailsPage.xaml** to display a list of messages and a "New Message" `Entry` UI widget. |
 | **SpeechTranslatorPage.xaml** | This is a starting point for the UI related to **part2** of the lab. It is incomplete and will be utilized as part of that step. |
 
+## Run the starter application
 
+1. Build the application in Visual Studio.
+
+2. Select one of the supported platforms and set it as the Startup Project by right-clicking on the project in the Solution Explorer and selecting *Set as Startup*. Alternatively, you can use the platform drop-down in the toolbar which is next to the **Play** button.
+
+![Select a Platform](media/image3.png)
+
+> **Note:** The UWP app is only available if you are running on Windows, and the Mac app is only available if you are running on macOS. In addition, you must have a Mac to run the iOS project.
+
+3. Run the application by clicking the **Play** button in the toolbar, or through the menu. Initially, you will be shown the **LoginPage**:
+
+![Login Page](media/image4.png)
+
+4. Type your name and select a color. Then tap the Circle icon at the bottom to enter the app.
+
+5. You will now be presented with a series of messages.
+
+![Main Page](media/image1.png)
+
+6. The Toolbar at the top has two icons:
+
+![Toolbar](media/image5.png)
+
+7. Tap the "Refresh" icon to see new messages. Alternatively, on iOS and Android, you can use the "Pull to refresh" gesture. These new messages are generated internally by the app for testing.
+
+8. You can add your own message by typing it into the `Entry` at the bottom of the page and pressing **ENTER** or **RETURN**.
+
+9. Finally, when there is a response to a root message here, you will see a text marker indicating that replies are available:
+
+![Replies are available](media/image6.png)
+
+10. You can tap on that message to see the details, or to enter your own response.
 
 ## Part One: add support for Azure
+
+In this first part, we 
 
 1. Add Microsoft.Azure.Mobile.Client NuGet to all projects.
 2. Create AzureMessageRepository.cs
