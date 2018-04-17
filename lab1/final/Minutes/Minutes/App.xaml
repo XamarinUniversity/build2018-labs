@@ -5,11 +5,6 @@
 	<Application.Resources>
 
 		<!-- Application resource dictionary -->
-        <ResourceDictionary>
-            <Style TargetType="Label">
-                <Setter Property="TextColor" Value="Accent"/>
-            </Style>
-        </ResourceDictionary>
 
 	</Application.Resources>
 </Application>

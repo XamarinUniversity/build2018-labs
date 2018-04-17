@@ -630,7 +630,7 @@ private async void OnItemTapped(object sender, ItemTappedEventArgs e)
 ```
 
 ```csharp
-private readonly NoteEntry entry;
+private NoteEntry entry;
 
 public NoteEntryEditPage (NoteEntry entry)
 {
@@ -649,9 +649,7 @@ public NoteEntryEditPage (NoteEntry entry)
 public App ()
 {
 	InitializeComponent();
-   
-    ...
-
+	...
     MainPage = new NavigationPage(new Minutes.MainPage());
 }
 ```
@@ -819,4 +817,463 @@ Notice that the screen looks a bit crammed, and that there's a big blank bar acr
 
 ## Add support to create a new NoteEntry
 
-Now that we can display and 
+Now that we can display and update our notes, let's add support to **Add** a new note. We'll do this by adding a new `Entry` to the **MainPage** which will trigger a new note.
+
+### Add a New Text Entry
+
+1. Open **MainPage.xaml** and locate the `ListView`. It's currently the only UI element on the page.
+
+2. Surround the `ListView` with a `StackLayout`.
+
+```xml
+    <StackLayout>
+        <ListView x:Name="entries">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <TextCell
+				        Text="{Binding Title}"
+				        Detail="{Binding Text}"
+				        DetailColor="Goldenrod" />
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </StackLayout>
+```
+
+3. Put an `Entry` widget above the `ListView`, set the `x:Name` to "newEntry".
+	- Set the `PlaceHolder` property to "Add a new Entry".
+	- Set the `Margin` property to "0,0,0,20". This adds a 20 unit space below the control to separate it from the `ListView`.
+
+```xml
+<Entry x:Name="newEntry" Placeholder="Add a new Entry" Margin="0,0,0,20" />
+```
+
+### Implement the logic to add a new Note
+
+1. Open the code behind file (**MainPage.xaml.cs**) and locate the constructor.
+
+2. After the `InitializeComponent` method, add a `Completed` event handler to the **newEntry** control. Wire it up to a method named **OnAddNewEntry**.
+
+```csharp
+public MainPage()
+{
+	InitializeComponent();
+	...
+    newEntry.Completed += OnAddNewEntry;
+}
+```
+
+3. Create the `OnAddNewEntry` method. It is a standard event handler.
+
+4. In the method, get the `Text` value from the **newEntry** control and store it in a variable.
+
+5. If the string is _not_ empty, create a new `NoteEntry` object and use the text as the `Title`.
+
+6. Add the new note to our note entry store (`App.Entries.AddAsync`). Make sure to use the `await` keyword (which means you'll need to add an `async` keyword to the method!)
+
+7. Copy the code you used in `OnItemTapped` to navigate to the `NoteEntryEditPage` screen, passing it your new item. Make sure to use `await`.
+
+8. Finally, set the `newEntry.Text` property to an empty string to clear it out _after_ the navigation call - this will clear the UI but you won't see it until we navigate back.
+
+```csharp
+private async void OnAddEntry(object sender, EventArgs e)
+{
+    string text = newEntry.Text;
+    if (!string.IsNullOrWhiteSpace(text))
+    {
+        var item = new NoteEntry { Title = text };
+        await App.Entries.AddAsync(item);
+        await Navigation.PushAsync(new NoteEntryEditPage(item));
+        newEntry.Text = string.Empty;
+    }
+}
+```
+
+9. Run the app on at least one platform and check out the new UI.
+
+![App on UWP](media/image24.png)
+
+10. Try adding a new item by typing some text in the field and pressing **ENTER** or **RETURN** on the keyboard.
+
+![Add a new note on UWP](media/image25.png)
+
+## Delete a note
+
+The last operation we have to add is the support to _delete_ a note. We will do this by adding a button to the **Details** page.
+
+### Add Toolbar button on the Details page
+
+1. Open **NoteEntryEditPage.xaml**.
+
+2. Right after the `ContentPage` open tag, add a new `ToolbarItem`. This needs to be in the `ToolbarItems` collection; use the following XAML to define it:
+
+```xml
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+	...>
+             
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Delete" Icon="delete.png" Clicked="OnDeleteEntry" />
+    </ContentPage.ToolbarItems>
+    ...
+</ContentPage>
+```
+
+> This will add a new Button to the standard navigation toolbar. Since we are using a `NavigationPage`, this is a great area to put extra functionality relevant to the screen.
+
+3. Open the **NoteEntryEditPage.xaml.cs** file and add a standard event handler method named **OnDeleteEntry** to handle the button click.
+
+4. In the event handler, first ask the user whether they _really_ want to delete the note. You can use the built-in `DisplayAlert` method which is part of the `ContentPage` base class. It takes a minimum of three parameters:
+	- **Title** - set this to `"Delete Entry?"`
+	- **Description** - set this to `$"Are you sure you want to delete the entry {Title}?"`
+	- **OK Button Text** - set this to `"Yes"`
+	- **Cancel Button Text** - set this to `"No"`
+
+5. `DisplayAlert` is asynchronous and returns a true/false whether the OK button was tapped. Use `await` to get the value.
+
+6. If the user indicates "OK", then remove the selected note (`entry` field) from the note store (`APp.Entries.DeleteAsync`).
+
+7. Set the `entry` field to **null** so we don't try to update it later.
+
+8. Call `Navigation.PopAsync` to return to the main screen. This is also an `await`able operation.
+
+```csharp
+private async void OnDeleteEntry(object sender, EventArgs e)
+{
+    if (await DisplayAlert("Delete Entry", $"Are you sure you want to delete the entry {Title}?", "Yes", "No"))
+    {
+        await App.Entries.DeleteAsync(entry);
+        entry = null; // deleted!
+        await Navigation.PopAsync();
+    }
+}
+```
+
+### Add the delete.png image
+
+The `ToolbarItem` needs an image - particularly on UWP where no text is displayed by default. Images and graphics are often one of the areas where we will need to provide _platform-specific_ values because the sizes change from platform-to-platform.
+
+There are three folders in the [assets folder](https://github.com/XamarinUniversity/build2018-labs/tree/master/lab1/assets) included with this lab. We need to copy the images from the **ios**, **android**, and **windows** folders into the project.
+
+#### Android
+
+1. Open the **assets** folder in an Explorer or Finder window.
+
+2. In Visual Studio, expand the **Minutes.Android** project and expand the **Resources** folder in the Solution Explorer. You should see several **drawable** folders:
+
+![Drawable Folders in VS](media/image26.png)
+
+3. **Drag** the contents from each folder in **assets** into the same-named folder in Visual Studio. On Windows, you can drag the entire folder, on the Mac you need to drag each file (folder drags _replace_ the folder which isn't what you want!)
+
+4. Expand each of the folders in VS and verify that the **delete.png** file is there
+
+![Check for the delete icon](media/image27.png)
+
+5. Select each one and verify that the properties indicate the **Build Action** is set to **AndroidResource**
+
+![Check the build action](media/image28.png)
+
+#### iOS
+
+1. In Visual Studio, expand the **Minutes.iOS** project and expand the **Resources** folder in the Solution Explorer. You should see graphical assets here, primarily icons.
+
+2. **Drag** the three icons in the **ios** folder from **assets** into the **Resources** folder in Visual Studio.
+
+3. Select each one in the Solution Explorer and verify that the **Build Action** is set to **BundleResource**.
+
+#### UWP
+
+1. In Visual Studio, expand the **Minutes.UWP** project.
+
+2. **Drag** the single **delete.png** icon in the **windows** folder from **assets** into the root of the UWP project.
+
+3. Select the icon in the Solution Explorer and verify that the **Build Action** is set to **Content**.
+
+### Test the delete function
+
+1. Run the app on one of the platforms.
+
+2. Select an entry in the `ListView`
+
+3. Tap the trash can icon in the top right corner. You should see your prompt.
+
+![Delete an Entry in UWP](media/icon29.png)
+
+4. Selecting "Yes" should delete the entry and return you to the main page where the selected entry will be gone, "No" should stay on the details screen.
+
+## Adding a persistence storage
+
+The final step in the lab is to add a persistence data store so that our notes stick around as we start and stop the app. We will store the list of notes in an XML file with the following structure:
+
+```xml
+<minutes>
+  <entry title="The Title" text="The description" createdDate="2018-04-16" />
+  <entry title="The Title" text="The description" createdDate="2018-04-16" />
+  <entry title="The Title" text="The description" createdDate="2018-04-16" />
+</minutes>
+```
+
+This will require that we implement a new `INoteEntryStore` implementation oriented around saving to a file. You could also use SQLite, or even a cloud service such as Azure to store your data.
+
+### Create the FileEntryStore
+
+1. Create a new C# class in the **Data** folder. Name it **FileEntryStore**.
+
+2. Have the class implement the `INoteEntryStore` interface. You can right-click on the interface itself, select **Quick Actions and Refactorings...** and get Visual Studio to stub out all the required methods.
+
+3. Add a field of type `List<NoteEntry>` to hold the entries we have loaded (or saved) to the file. Name the field **loadedNotes**.
+
+4. Add a field of type `string` to hold the filename.
+
+5. Add a public, default (no-argument) constructor to the class and set the filename field using the following code:
+
+```csharp
+this.filename = Path.Combine(Environment.GetFolderPath(
+            Environment.SpecialFolder.LocalApplicationData), 
+            "minutes.xml");
+```
+
+> This code stores the file into the proper location on all supported platforms. Each platform has different requirements, but luckily this API abstracts that knowledge away from us.
+
+### Add code to read the file from disk
+
+1. Add a static method named `ReadDataAsync` to the `FileEntryStore` that takes a `string` filename and returns a `Task<IEnumerable<NoteEntry>>`. Since it will be loading from a file, we want to use the async file I/O features of .NET, go ahead and add the `async` keyword to the method signature.
+
+```csharp
+static async Task<IEnumerable<NoteEntry>> ReadDataAsync(string filename)
+{
+}
+```
+
+2. Start by checking whether the file exists using the `File.Exists` API, if not, return `Enumerable.Empty<NoteEntry>()`.
+
+3. If the file _does_ exist, use a `StreamReader` to load the file - use the `ReadToEndAsync` method and apply the `await` keyword.
+
+4. Next, check the returned string and make sure it has data - if not, you can return `Enumerable.Empty<NoteEntry>()`.
+
+5. Finally, use the following code to parse the XML text with the `XDocument` class to turn XML into an object graph:
+
+```csharp
+IEnumerable<NoteEntry> result = 
+	XDocument.Parse(text)
+        .Root
+        .Elements("entry")
+        .Select(e =>
+            new NoteEntry
+            {
+                Title = e.Attribute("title").Value,
+                Text = e.Attribute("text").Value,
+                CreatedDate = (DateTime)e.Attribute("createdDate")
+            });
+```
+
+6. Return the enumerable data from the method.
+
+The final code for the method is shown here for completeness:
+
+```csharp
+static async Task<IEnumerable<NoteEntry>> ReadDataAsync(string filename)
+{
+    if (!File.Exists(filename))
+    {
+        return Enumerable.Empty<NoteEntry>();
+    }
+
+    string text;
+    using (var reader = new StreamReader(filename))
+    {
+        text = await reader.ReadToEndAsync().ConfigureAwait(false);
+    }
+
+    if (string.IsNullOrWhiteSpace(text))
+    {
+        return Enumerable.Empty<NoteEntry>();
+    }
+
+    IEnumerable<NoteEntry> result = XDocument.Parse(text)
+            .Root
+            .Elements("entry")
+            .Select(e =>
+                new NoteEntry
+                {
+                    Title = e.Attribute("title").Value,
+                    Text = e.Attribute("text").Value,
+                    CreatedDate = (DateTime)e.Attribute("createdDate")
+                });
+
+    return result;
+}
+```
+
+### Add code to write the collection to disk
+
+1. Add a static method named **SaveDataAsync** that takes a filename and an enumerable collection of `NoteEntry` objects and returns a `Task`.
+
+2. Take the collection of notes and turn it into XML with the following C# code that uses LINQ to XML:
+
+```csharp
+XDocument root = new XDocument(
+    new XElement("minutes",
+        notes.Select(n =>
+            new XElement("entry",
+                new XAttribute("title", n.Title ?? ""),
+                new XAttribute("text", n.Text ?? ""),
+                new XAttribute("createdDate", n.CreatedDate)))));
+```
+
+3. Use the `StreamWriter` class to write the `XDocument` to the given filename. Use the `WriteAsync` method so it's asynchronous, and use the `ToString()` method on the `XDocument` to turn it into text.
+
+The final code is shown here for completeness.
+
+```csharp
+static async Task SaveDataAsync(string filename, 
+	                            IEnumerable<NoteEntry> notes)
+{
+    XDocument root = new XDocument(
+        new XElement("minutes",
+            notes.Select(n =>
+                new XElement("entry",
+                    new XAttribute("title", n.Title ?? ""),
+                    new XAttribute("text", n.Text ?? ""),
+                    new XAttribute("createdDate", n.CreatedDate)))));
+
+    using (StreamWriter writer = new StreamWriter(filename))
+    {
+        await writer.WriteAsync(root.ToString()).ConfigureAwait(false);
+    }
+}
+
+```
+
+### Initialize the FileEntryStore
+
+1. Add a method named `InitializeAsync` that returns a `Task`. This method will be used to initialize our **loadedNotes** field and be called from each method to ensure we've read our initial data store.
+
+2. Have the method test the **loadedNotes** field for `null`. If it's not been initialized, call the `ReadDataAsync` method to get the `IEnumerable` of notes.
+
+3. Use the `await` keyword and put the resulting `IEnumerable` into a `List<NoteEntry>` and assign it to the **loadedNotes** field.
+
+```csharp
+private async Task InitializeAsync()
+{
+    if (loadedNotes == null)
+    {
+        loadedNotes = (await ReadDataAsync(filename)).ToList();
+    }
+}
+```
+
+### Implement the Add support
+
+1. Add the `AddAsync` method to the class if you haven't already.
+
+2. Call `InitializeAsync` to ensure the notes are loaded from disk. Use the `async` and `await` keywords.
+
+3. Check whether the passed `NoteEntry` is already present in the **loadedNotes**. The easiest way to do this is by looking for the same `Id` property.
+
+4. If the entry is _not_ present, add it to the **loadedNotes** collection.
+
+5. Call `SaveDataAsync` to write the data back to disk.
+
+```csharp
+public async Task AddAsync(NoteEntry entry)
+{
+    await InitializeAsync();
+
+    if (!loadedNotes.Any(ne => ne.Id == entry.Id))
+    {
+        loadedNotes.Add(entry);
+        await SaveDataAsync(filename, loadedNotes);
+    }
+}
+```
+
+### Implement the Delete support
+
+1. Add the `DeleteAsync` method to the class if you haven't already.
+
+2. Call `InitializeAsync` to ensure the notes are loaded from disk. Use the `async` and `await` keywords.
+
+3. Remove the passed note from the **loadedNotes** collection. The `Remove` method returns a true/false whether any matching item was found.
+
+3. Call `SaveDataAsync` to write the data back to disk if an item was removed.
+
+```csharp
+public async Task DeleteAsync(NoteEntry entry)
+{
+    await InitializeAsync();
+
+    if (loadedNotes.Remove(entry))
+    {
+        await SaveDataAsync(filename, loadedNotes);
+    }
+}
+```
+
+### Implement the Get support
+
+1. Add the `GetAllAsync` method to the class if you haven't already.
+
+2. Call `InitializeAsync` to ensure the notes are loaded from disk. Use the `async` and `await` keywords.
+
+3. Return the **loadedNotes** collection ordered by `CreatedDate` in descending order.
+
+```csharp
+public async Task<IEnumerable<NoteEntry>> GetAllAsync()
+{
+    await InitializeAsync();
+    return loadedNotes.OrderByDescending(n => n.CreatedDate);
+}
+```
+
+4. Add the `GetByIdAsync` method to the class if you haven't already.
+
+5. Call `InitializeAsync` to ensure the notes are loaded from disk. Use the `async` and `await` keywords.
+
+6. Return the specific note from the **loadedNotes** collection using the `Id` to find it.
+
+```csharp
+public async Task<NoteEntry> GetByIdAsync(string id)
+{
+    await InitializeAsync();
+    return loadedNotes.SingleOrDefault(n => n.Id == id);
+}
+```
+
+### Add the Update support
+
+1. Add the `UpdateAsync` method to the class if you haven't already.
+
+2. Call `InitializeAsync` to ensure the notes are loaded from disk. Use the `async` and `await` keywords.
+
+3. Add a test to ensure that the passed note is in our **loadedNotes** collection. If not, throw an exception.
+
+3. Call `SaveDataAsync` to push any changes to in-memory objects back to disk.
+
+```csharp
+public async Task UpdateAsync(NoteEntry entry)
+{
+    await InitializeAsync();
+
+    if (!loadedNotes.Contains(entry))
+    {
+        throw new Exception($"NoteEntry {entry.Title} was not found in the {nameof(FileEntryStore)}. Did you forget to add it?");
+    }
+
+    await SaveDataAsync(filename, loadedNotes);
+}
+```
+
+### Switch to the file-based storage
+
+1. Open the **App.xaml.cs** file and locate the line where the `Entries` property is assigned.
+
+2. Comment out the existing `MemoryEntryStore` and replace it with a new `FileEntryStore`.
+
+3. Comment out the `LoadMockData` call on the next line - we don't want out mock data anymore.
+
+4. Run the app on at least one platform. You should be able to add/update and delete notes just as before.
+
+5. Close the app (force it to close using the platform-specific gesture if necessary).
+
+6. Run the app again - you should _still_ see your data.
+

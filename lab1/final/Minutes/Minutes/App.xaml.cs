@@ -1,7 +1,6 @@
-﻿using System;
+﻿using Minutes.Data;
+using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -11,16 +10,17 @@ namespace Minutes
 {
 	public partial class App : Application
 	{
-		public static INoteEntryStore Entries { get; set; }
+        public static INoteEntryStore Entries { get; set; }
 
-		public App ()
+        public App ()
 		{
 			InitializeComponent();
 
-            Entries = new FileEntryStore(); // new MemoryEntryStore();
+            Entries = new FileEntryStore();
+            //new MemoryEntryStore();
             //Entries.LoadMockData();
 
-            MainPage = new NavigationPage(new EntriesPage());
+            MainPage = new NavigationPage(new Minutes.MainPage());
 		}
 
 		protected override void OnStart ()

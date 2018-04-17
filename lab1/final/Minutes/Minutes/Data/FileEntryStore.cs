@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace Minutes
+namespace Minutes.Data
 {
     public class FileEntryStore : INoteEntryStore
     {
@@ -17,28 +17,42 @@ namespace Minutes
 
         public FileEntryStore()
         {
-            this.filename = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "minutes.xml");
+            this.filename = Path.Combine(Environment.GetFolderPath(
+                                            Environment.SpecialFolder.LocalApplicationData), 
+                                            "minutes.xml");
         }
+
+        private async Task InitializeAsync()
+        {
+            if (loadedNotes == null)
+            {
+                loadedNotes = (await ReadDataAsync(filename)).ToList();
+            }
+        }
+
 
         public async Task AddAsync(NoteEntry entry)
         {
             await InitializeAsync();
-            
-            if (!loadedNotes.Contains(entry))
+
+            if (!loadedNotes.Any(ne => ne.Id == entry.Id))
             {
                 loadedNotes.Add(entry);
-                await SaveData(filename, loadedNotes);
+                await SaveDataAsync(filename, loadedNotes);
             }
         }
 
         public async Task DeleteAsync(NoteEntry entry)
         {
-            Debug.Assert(loadedNotes != null);
-            loadedNotes.Remove(entry);
-            await SaveData(filename, loadedNotes);
+            await InitializeAsync();
+
+            if (loadedNotes.Remove(entry))
+            {
+                await SaveDataAsync(filename, loadedNotes);
+            }
         }
 
-        public async Task<IEnumerable<NoteEntry>> GetAll()
+        public async Task<IEnumerable<NoteEntry>> GetAllAsync()
         {
             await InitializeAsync();
             return loadedNotes.OrderByDescending(n => n.CreatedDate);
@@ -50,23 +64,21 @@ namespace Minutes
             return loadedNotes.SingleOrDefault(n => n.Id == id);
         }
 
-        public Task UpdateAsync(NoteEntry entry)
+        public async Task UpdateAsync(NoteEntry entry)
         {
-            Debug.Assert(loadedNotes != null);
-            return SaveData(filename, loadedNotes);
-        }
+            await InitializeAsync();
 
-        private async Task InitializeAsync()
-        {
-            if (loadedNotes == null)
+            if (!loadedNotes.Contains(entry))
             {
-                loadedNotes = (await ReadData(filename)).ToList();
+                throw new Exception($"NoteEntry {entry.Title} was not found in the {nameof(FileEntryStore)}. Did you forget to add it?");
             }
+
+            await SaveDataAsync(filename, loadedNotes);
         }
 
-        private static async Task<IEnumerable<NoteEntry>> ReadData(string filename)
+        private static async Task<IEnumerable<NoteEntry>> ReadDataAsync(string filename)
         {
-            if (string.IsNullOrEmpty(filename) || !File.Exists(filename))
+            if (!File.Exists(filename))
             {
                 return Enumerable.Empty<NoteEntry>();
             }
@@ -74,7 +86,7 @@ namespace Minutes
             string text;
             using (var reader = new StreamReader(filename))
             {
-                text = await reader.ReadToEndAsync();
+                text = await reader.ReadToEndAsync().ConfigureAwait(false);
             }
 
             if (string.IsNullOrWhiteSpace(text))
@@ -82,7 +94,7 @@ namespace Minutes
                 return Enumerable.Empty<NoteEntry>();
             }
 
-            return XDocument.Parse(text)
+            IEnumerable<NoteEntry> result = XDocument.Parse(text)
                     .Root
                     .Elements("entry")
                     .Select(e =>
@@ -90,28 +102,25 @@ namespace Minutes
                         {
                             Title = e.Attribute("title").Value,
                             Text = e.Attribute("text").Value,
-                            CreatedDate = (DateTime) e.Attribute("createdDate")
+                            CreatedDate = (DateTime)e.Attribute("createdDate")
                         });
+
+            return result;
         }
 
-        private async Task SaveData(string filename, IEnumerable<NoteEntry> notes)
+        static async Task SaveDataAsync(string filename, IEnumerable<NoteEntry> notes)
         {
-            if (string.IsNullOrEmpty(filename))
-            {
-                return;
-            }
-
-            var root = new XDocument(
+            XDocument root = new XDocument(
                 new XElement("minutes",
                     notes.Select(n =>
                         new XElement("entry",
-                            new XAttribute("title", n.Title),
-                            new XAttribute("text", n.Text),
+                            new XAttribute("title", n.Title ?? ""),
+                            new XAttribute("text", n.Text ?? ""),
                             new XAttribute("createdDate", n.CreatedDate)))));
 
             using (StreamWriter writer = new StreamWriter(filename))
             {
-                await writer.WriteAsync(root.ToString());
+                await writer.WriteAsync(root.ToString()).ConfigureAwait(false);
             }
         }
     }

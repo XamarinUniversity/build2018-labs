@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Minutes.Data;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,15 +15,17 @@ namespace Minutes
 	{
         private NoteEntry entry;
 
-		public NoteEntryEditPage (NoteEntry entry)
+        public NoteEntryEditPage (NoteEntry entry)
 		{
 			InitializeComponent ();
             BindingContext = this.entry = entry;
-		}
+        }
 
         protected override void OnAppearing()
         {
             base.OnAppearing();
+            if (Device.RuntimePlatform == Device.macOS
+                || Device.RuntimePlatform == Device.UWP)
             textEditor.Focus();
         }
 

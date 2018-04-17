@@ -3,23 +3,23 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Minutes
+namespace Minutes.Data
 {
-	public class MemoryEntryStore : INoteEntryStore
+    public class MemoryEntryStore : INoteEntryStore
     {
         private readonly Dictionary<string, NoteEntry> entries = new Dictionary<string, NoteEntry>();
 
-		public Task<IEnumerable<NoteEntry>> GetAll()
-		{
-            return Task.FromResult<IEnumerable<NoteEntry>>(entries.Values.ToList());
-		}
+        public Task<IEnumerable<NoteEntry>> GetAllAsync()
+        {
+            IEnumerable<NoteEntry> result = entries.Values.ToList();
+            return Task.FromResult(result);
+        }
 
-		public Task AddAsync(NoteEntry entry)
-		{
+        public Task AddAsync(NoteEntry entry)
+        {
             entries.Add(entry.Id, entry);
-
             return Task.CompletedTask;
-		}
+        }
 
         public Task UpdateAsync(NoteEntry entry)
         {
@@ -34,12 +34,9 @@ namespace Minutes
 
         public Task<NoteEntry> GetByIdAsync(string id)
         {
-            if (entries.TryGetValue(id, out NoteEntry entry))
-            {
-                return Task.FromResult(entry);
-            }
-
-            return Task.FromResult<NoteEntry>(null);
+            NoteEntry entry = null;
+            entries.TryGetValue(id, out entry);
+            return Task.FromResult<NoteEntry>(entry);
         }
     }
 }

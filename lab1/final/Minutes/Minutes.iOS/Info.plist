@@ -21,11 +21,11 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>MinimumOSVersion</key>
-	<string>10.0</string>
+	<string>11.3</string>
 	<key>CFBundleDisplayName</key>
 	<string>Minutes</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.xamarin.minutes</string>
+	<string>com.yourcompany.Minutes</string>
 	<key>CFBundleVersion</key>
 	<string>1.0</string>
 	<key>CFBundleIconFiles</key>
@@ -50,7 +50,5 @@
 	<string>LaunchScreen</string>
 	<key>CFBundleName</key>
 	<string>Minutes</string>
-	<key>CFBundleShortVersionString</key>
-	<string>1</string>
 </dict>
 </plist>
