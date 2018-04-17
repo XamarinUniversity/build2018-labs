@@ -657,6 +657,19 @@ public App ()
 
 10. Run the app on at least one platform - try tapping on an entry in the `ListView`. It should navigate to your second page and display "Welcome to Xamarin.Forms!". You can go back through the built-in **Back** button located in the top-left corner of the running app window.
 
+11. Another feature of `NavigationPage` is the ability to customize the colors presented along the top. Let's update our page to use the same Blue color as the launch screen. On the `NavigationPage` class:
+    - Set the `BarBackgroundColor` property to `Color.FromHex("#3498db")`
+    - Set the `BarTextColor` property to `Color.White`
+
+```csharp
+MainPage = new NavigationPage(new Minutes.MainPage())
+{
+    BarBackgroundColor = Color.FromHex("#3498db"),
+    BarTextColor = Color.White
+};
+```
+
+
 ### Add UI to display details
 
 Next, let's change the second page UI to display the selected note's details.
