@@ -934,18 +934,6 @@ Support for offline caching is provided through SQLite, but it requires us to in
 
 3. Change the `IMobileServiceTable<CircleMessage>` **messages** field to be a `IMobileServiceSyncTable<CircleMessage>` instead. This is the interface which supports offline synchronization.
 
-4. Add a new method to the class named `InitalizeTableAsync` which returns a `Task` and takes no parameters.
-
-5. In the method, check whether **messages** has been initialized (null or not).
-
-6. If null, we need to do our one-time initialization (per launch). First, create a new local variable in the method of type `MobileServiceSQLiteStore`. Store it in a variable named **store** and pass it a filename - the instructions here will use "offlinecache.db".
-
-7. Next, call `DefineTable<CircleMessage>()` on the **store** object to define the shape of the offline table from our model object.
-
-8. Next, call `client.SyncContext.InitializeStore` passing the **store** object - this will initialize the offline support through an intermediary built-in class named the "SyncContext".
-
-9. Finally, call `GetSyncTable<CircleMessage>` on the **client** field to retrieve the new synchronization table and assign it to the **messages** field.
-
 ```csharp
 public sealed class AzureMessageRepository ...
 {
@@ -956,18 +944,65 @@ public sealed class AzureMessageRepository ...
     {
         client = new MobileServiceClient(AzureServiceUrl);
     }
-
-    Task InitializeTableAsync()
-    {
-        if (messages == null)
-        {
-            messages = client.GetSyncTable<CircleMessage>();
-        }
-    }
     ...
 }
 ```
 
+4. Add a new method to the class named `InitalizeTableAsync` which returns a `Task` and takes no parameters. We will be using the `await` keyword in this method, so go ahead and apply the `async` keyword to the signature.
+
+5. In the method, check whether **messages** has been initialized by checking to see if it's `null`.
+
+```csharp
+async Task InitializeTableAsync()
+{
+    if (messages == null)
+    {
+    	// Need to init
+    }
+}
+```
+
+6. If null, we need to do our one-time initialization (per launch). First, create a new local variable in the method of type `MobileServiceSQLiteStore`. Store it in a variable named **store** and pass it a filename - the instructions here will use "offlinecache.db".
+
+```csharp
+var store = new MobileServiceSQLiteStore("offlinecache.db");
+```
+
+7. Next, call `DefineTable<CircleMessage>()` on the **store** object to define the shape of the offline table from our model object.
+
+```csharp
+store.DefineTable<CircleMessage>();
+```
+
+8. Next, call `client.SyncContext.InitializeStore` passing the **store** object - this will initialize the offline support through an intermediary built-in class named the "SyncContext".
+
+```csharp
+await client.SyncContext.InitializeAsync(store);
+```
+
+9. Finally, call `GetSyncTable<CircleMessage>` on the **client** field to retrieve the new synchronization table and assign it to the **messages** field.
+
+```csharp
+messages = client.GetSyncTable<CircleMessage>();
+```
+
+### Ensure our table is initialized
+
+1. Go through all the public methods in the `AzureMessageRepository` class and make sure `InitializeTableAsync` is called before trying to work with the **messages** field.  
+
+> **Note**: You could also make the method public and force the client user to call it before using the class. Or even short circuit the code by checking `messages` before calling it to make it a little more efficient and avoid the call. 
+
+2. As an example, here is the adjusted `AddAsync` method:
+
+```csharp
+public async Task AddAsync(CircleMessage message)
+{
+    await InitializeTableAsync();
+    await messages.InsertAsync(message);
+}
+```
+
+> Another option, which the solution in Github will take is to only call it on `AddAsync` and `GetRootsAsync` which we know are called first (and even `AddAsync` should be called later). The detail-oriented methods require an existing message with an Id which shouldn't be possible to retrieve without calling one of the other methods first. Instead, we'll use a `Debug.Assert`. You can see the completed code here.
 
 
 2. Need a parameterless ctor on CircleMessage!

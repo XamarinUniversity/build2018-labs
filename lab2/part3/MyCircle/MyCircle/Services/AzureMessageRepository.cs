@@ -31,35 +31,15 @@ namespace MyCircle.Services
                 store.DefineTable<CircleMessage>();
 
                 // Create the DB file
-                await client.SyncContext.InitializeAsync(store).ConfigureAwait(false);
+                await client.SyncContext.InitializeAsync(store);
 
                 // Get the sync table
                 messages = client.GetSyncTable<CircleMessage>();
-
-                // Purge any records
-                await PurgeOldRecordsAsync(/*true*/);
-            }
-        }
-
-        private async Task PurgeOldRecordsAsync(bool clearLocalCache = false)
-        {
-            if (!clearLocalCache)
-            {
-                var oneWeek = DateTimeOffset.Now.AddDays(-7);
-                var query = messages.CreateQuery().Where(item => item.CreatedAt < oneWeek);
-                await messages.PurgeAsync("syncPurgeOldData", query, force: true, cancellationToken: CancellationToken.None).ConfigureAwait(false);
-            }
-            else
-            {
-                await messages.PurgeAsync(force: true);
-                await PullChangesAsync(true).ConfigureAwait(false);
             }
         }
 
         public async Task AddAsync(CircleMessage message)
         {
-            Debug.Assert(message.Id == null);
-
             await InitializeTableAsync();
             await messages.InsertAsync(message);
             await PushChangesAsync();
