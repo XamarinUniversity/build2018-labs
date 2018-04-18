@@ -1002,22 +1002,241 @@ public async Task AddAsync(CircleMessage message)
 }
 ```
 
-> Another option, which the solution in Github will take is to only call it on `AddAsync` and `GetRootsAsync` which we know are called first (and even `AddAsync` should be called later). The detail-oriented methods require an existing message with an Id which shouldn't be possible to retrieve without calling one of the other methods first. Instead, we'll use a `Debug.Assert`. You can see the completed code here.
+> Another option, which the solution in Github will take is to only call it on `AddAsync` and `GetRootsAsync` which we know are called first (and even `AddAsync` should be called later). The detail-oriented methods require an existing message with an Id which shouldn't be possible to retrieve without calling one of the other methods first. Instead, we'll use a `Debug.Assert`. You can see the [completed code here](https://github.com/XamarinUniversity/build2018-labs/blob/master/lab2/part3/MyCircle/MyCircle/Services/AzureMessageRepository.cs#L60).
+
+3. Run the app on one of the supported platforms - it should **crash** or fail because the offline synchronization requires that our `CircleMessage` has a default constructor!
+
+#### Add a default constructor to CircleMessage
+
+1. Open the **CircleMessage.cs** source file in the **Data** folder of the **MyCircle** shared-code project.
+
+2. Locate the constructor - notice it takes a default parameter. Remove the default value and create a second version of the constructor that chains to this parameterized version:
+
+```csharp
+public CircleMessage() : this(null)
+{
+}
+
+public CircleMessage(string parentId)
+{
+	...
+}
+````
+
+3. Run the app on one of the supported platforms - it should run now, but notice that it no longer shows any data! That's because we haven't actually _pulled_ the data down from Azure yet, that's now a manual operation under your control.
+
+> With offline synchronization, you now have complete control over when we get updates from Azure, and when we push our local changes _back_ to Azure.
+
+### Add support to pull remote changes from Azure
+
+Pulling down changes is done _incrementally_ by defining a unique query with an assigned name. When you ask for new changes, you use the same query and name, and the library _automatically_ fetches only changed records from the last time you did a pull from the server.
+
+The first time, this will take some time - as all records are retrieve (in 50 count batches), but after that, it's quite fast unless the table has a lot of churn.
 
 
-2. Need a parameterless ctor on CircleMessage!
-3. Add InitializeTableAsync, InitializeOfflineStorageAsync, and SynchronizeAsync to Azure repo
-4. Call Synchronize in each method.
-..
-5. Add Xam.Plugin.Connectivity to all projects
-6. Update SynchronizeAsync to check connectivity .. fun test: use if (true) to exit early and show that it's cached offline with no sync.
-..
-7. Add pushChanges to Synchronize and set to false when using GetXXX methods.
-..
-7. Add ResolveConflictAsync method
-8. Add Version field to CircleMessage
-9. Implement IEquatable<CircleMessage> on CircleMessage .. Test Id, Text, Color, ThreadId.
-..
-10. Add PurgeOldRecordsAsync, call at end of InitializeTableAsync
+1. In the `AzureMessageRepository` class, add a new method named `PullChangesAsync`. It should return a `Task` and take no parameters. Go ahead and add the `async` keyword to the signature.
 
-> CAN UNINSTALL APP TO FORCE A FULL CACHE CLEAR!
+2. On the **messages** field, call `PullAsync`, you need to pass it two parameters:
+	- **query name**: a unique string to represent the shape of the data being retrieved. If your app pulls different aspects of the data, you can have different caches by specifying different query names. In addition, you can pass `null` as the query name to force a full fetch.
+	- **query**: the actual query to retrieve - this includes any `Where` and `Select` constraints. You can just use the built-in `CreateQuery` method on the `IMobileServiceSyncTable` interface to do a standard `SELECT` with all fields.
+
+3. You can use any unique string for the query name - we will use "syncCircleMessage" here.
+
+4. Use the default `CreateQuery` on your **messages** field to generate the query. We want to return all records (roots and details) since we will be using them all at some point.
+
+3. Add a `ConfigureAwait(false)` at the end of the method chain - since we aren't doing anything in the method that requires the UI thread, we can make it more efficient by not forcing it switch back when the pull is complete.
+
+
+```csharp
+async Task PullChangesAsync()
+{
+await messages.PullAsync(
+				$"sync_{nameof(CircleMessage)}", 
+				messages.CreateQuery())
+			.ConfigureAwait(false);
+}
+```
+
+> **Why not have two queries: one for Roots and one for Details?**
+>
+> We could certainly do that - and if some of the data was never referenced, or rarely used it might make sense to do exactly that. However, you have to balance the amount of data with the number of round trips to the server - each query does at _least_ two queries to ensure it got all the data. 
+>
+> In addition, maintaining multiple caches can get confusing and cause some data discrepancies - it complicates the design of the app and how it manages the data (e.g. think about updates to one cache but not pulling down the other).
+> 
+> So we opted for simplicity here - as most apps should probably do. You can play with this design however and watch the network traffic with a tool like [Fiddler](https://www.telerik.com/fiddler) on the UWP version of the app to watch the traffic.
+
+### Use the new support to pull data down
+
+1. Update the `GetRootsAsync` and `GetDetailsAsync` method to use the new `PullChangesAsync` to grab the latest copy of server-side data. Make sure you call this _after_ you initialize the table, but _before_ you do the actual query.
+
+> The cool thing here is that your queries to **messages** will all be done from the local cache now - that's why you didn't see any data before we pulled it down!
+
+2. Here's `GetRootsAsync` as an example:
+
+```csharp
+public async Task<IEnumerable<CircleMessage>> GetRootsAsync()
+{
+    await InitializeTableAsync();
+    await PullChangesAsync();
+
+    return await messages.Where(cm => cm.IsRoot)
+        .OrderByDescending(cm => cm.CreatedAt)
+        .ToEnumerableAsync();
+}
+```
+
+3. Try running the app now - you should see data again, however inserting new records won't work yet because we aren't pushing our local changes back to Azure.
+
+### Add support to push local changes to Azure
+
+1. In the `AzureMessageRepository` class, add a new method named `PushChangesAsync`. It should return a `Task` and take no parameters. Go ahead and add the `async` keyword to the signature.
+
+2. Use the `SyncContext` property on the **client** field and call the `PushAsync` method. Since this is a `Task`-based method, use the `await` keyword to properly synchronize to it.
+
+```csharp
+async Task PushChangesAsync()
+{
+    // Push queued changes back to Azure
+    await client.SyncContext.PushAsync();
+}
+```
+
+3. Run the app and try inserting a record, others should be able to see the record if they refresh, showing that it's synchronizing to Azure!
+
+### Adding a network check
+
+If you try turning off your network access, you will find things break down quickly - the client will throw an exception because no network is available. We could `catch` the exception and provide a nicer message, but a better approach is to avoid it by checking to see if we have network connectivity and just not bother to try to synchronize in that case.
+
+1. Open the NuGet package manager for the solution (or for each project on VS for Mac).
+
+2. Add the [Xam.Plugin.Connectivity](https://www.nuget.org/packages/Xam.Plugin.Connectivity/) to all projects.
+
+3. Add a new method to the `AzureMessageRepository` class named `IsOnlineAsync`. It should take no parameters and return a `Task<bool>`.
+
+4. In the method, call the `CrossConnectivity.Current.IsRemoteReachable` method and pass it the Azure endpoint. 
+
+5. You can use any timeout you prefer - the lab will use 5 seconds.
+
+```csharp
+Task<bool> IsOnlineAsync()
+{
+    return CrossConnectivity.Current
+        .IsRemoteReachable(client.MobileAppUri, 
+            TimeSpan.FromSeconds(5));
+}
+
+```
+
+6. Add a call to the new `IsOnlineAsync` method to your push and pull methods and exit early if you do not have network connectivity.
+
+7. You can try the network failure case again if you like to see the new behavior - it should just silently hold onto things and then when connectivity is restored, it will push and pull changes.
+
+> **Note**: you might be wondering if we need to _push_ changes after a connectivity restore. You could, but in this app, we've chosen to not worry about it - the client will automatically push local changes if there are any as part of the next _pull_ which happens more often in our app.
+
+### Handling conflicts (optional)
+
+One of the things that can come up with data synchronization is _conflicts_. In this app, it's very unlikely because each instance just supports new records and we don't do any delete or update operations.
+
+However, it's useful to add the support just to complete the picture of working with offline data.
+
+Conflict errors are reported when you call `PushAsync`. The client will throw a `MobileServicePushFailedException` exception with a collection of "push" failure records represented in a class named `MobileServiceTableOperationError` which gives us both the server and local record in conflict. 
+
+For each record, we can take several actions:
+
+- Force the server representation.
+- Force the client representation.
+- Merge the conflict in code ourselves
+- Ask the user what to do.
+
+In our case, we'll use the first two approaches. If the two records are the same (as far as our app is concerned), then we will use the server-side copy. If they are different, we'll prefer the client side. This is a pretty common/simple approach to conflict resolution - but you can design and code any approach you prefer.
+
+#### Add version support to the CircleMessage
+
+We need to start by adding support to tracking versions in our model object. Luckily, this is actually built-in and is already present - we just don't have a property mapping the field yet.
+
+1. Open the **CircleMessage.cs** source file in the **Data** folder in the **MyCircle** shared-code project.
+
+2. Add a new public property named `Version` of type `string`.
+
+```csharp
+public string Version { get; set; }
+```
+
+3. Next, to make it easy to compare two `CircleMessage` objects, let's implement `IEquatable<CircleMessage>` - add the interface to the class definition.
+
+4. Implement the `Equals` method by comparing the `Id` property and all our app properties.
+
+```csharp
+public bool Equals(CircleMessage other)
+{
+    return other.Id == this.Id
+        && other.Text == this.Text
+        && other.Color == this.Color
+        && other.ThreadId == this.ThreadId;
+}
+```
+
+#### Add conflict resolution to the view model
+
+1. In the `AzureMessageRepository` class, add a new method named `ResolveConflictAsync` that returns a `Task` and takes a `MobileServiceTableOperationError` - name it **error**. 
+
+2. Start by getting the server and local version and storing them in local variables. These are exposed through two generic properties on the passed `MobileServiceTableOperationError`:
+	- **serverItem**: `Result.ToObject<CircleMessage>()`
+	- **localItem**: `Item.ToObject<CircleMessage>()`
+
+3. Next, compare the two objects - just use the new `Equals` method - it returns `true` if the two objects are semantically equal.
+
+4. If they are equal, call `CancelAndDiscardItemAsync()` on the passed **error** object. You can return the `Task` from this method.
+
+5. If they are not equal, update the **localItem.Version** property to be the value from the server object and call `UpdateOperationAsync` to push the local representation to the server. You can return the `Task` from this method.
+
+6. You will need to turn the **localItem** into a JSON object - you can use `JObject.FromObject` to do this.
+
+```csharp
+Task ResolveConflictAsync(MobileServiceTableOperationError error)
+{
+    var serverItem = error.Result.ToObject<CircleMessage>();
+    var localItem = error.Item.ToObject<CircleMessage>();
+
+    if (serverItem.Equals(localItem))
+    {
+        // Items are identical, ignore the conflict 
+        // The server wins.
+        return error.CancelAndDiscardItemAsync();
+    }
+    else
+    {
+        // otherwise, the client wins.
+        localItem.Version = serverItem.Version;
+        return error.UpdateOperationAsync(JObject.FromObject(localItem));
+    }
+}
+```
+
+7. Finally, wrap your `PushAsync` call in the `PushChangesAsync` method in a `try` / `catch` construct and catch the `MobileServicePushFailedException`.
+
+8. In the `catch`, loop through all the `PushResult.Errors` if they exist (check for `null`), and call your new `ResolveConflictAsync` method to resolve each conflict.
+
+```csharp
+try
+{
+    // Push queued changes back to Azure
+    await client.SyncContext.PushAsync();
+
+}
+catch (MobileServicePushFailedException ex)
+{
+    foreach (var error in ex.PushResult?.Errors)
+    {
+        await ResolveConflictAsync(error);
+    }
+}
+```
+
+9. Build and run the app one last time to make sure we haven't broken anything!
+
+## Congratulations!
+
+You have completed this lab exercise and gotten a taste of using a few Azure services to cloud-connect your Xamarin application.
+
+There are a lot of other services you can consume from [AI and Machine Learning](https://azure.microsoft.com/en-us/services/cognitive-services/), to various [other storage](https://azure.microsoft.com/en-us/services/storage/) and [logic capabilities](https://azure.microsoft.com/en-us/services/functions/). Make sure to check out the [docs and samples](https://docs.microsoft.com/en-us/azure/) on all the services that might add more differentiators to your app!

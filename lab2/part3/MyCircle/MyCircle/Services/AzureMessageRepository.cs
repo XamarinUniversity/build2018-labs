@@ -75,49 +75,48 @@ namespace MyCircle.Services
                 .ToEnumerableAsync();
         }
 
+        Task<bool> IsOnlineAsync()
+        {
+            return CrossConnectivity.Current
+                .IsRemoteReachable(client.MobileAppUri, 
+                    TimeSpan.FromSeconds(5));
+        }
+
         async Task PushChangesAsync()
         {
-            if (!(await CrossConnectivity.Current.IsRemoteReachable(client.MobileAppUri, TimeSpan.FromSeconds(5))))
-            {
-                Debug.WriteLine($"Cannot connect to {client.MobileAppUri}. Appears to be offline");
+            if (!await IsOnlineAsync())
                 return;
-            }
 
             try
             {
                 // Push queued changes back to Azure
-                await client.SyncContext.PushAsync().ConfigureAwait(false);
+                await client.SyncContext.PushAsync();
 
             }
             catch (MobileServicePushFailedException ex)
             {
-                if (ex.PushResult != null)
+                foreach (var error in ex.PushResult?.Errors)
                 {
-                    foreach (var error in ex.PushResult.Errors)
-                    {
-                        await ResolveConflictAsync(error);
-                    }
+                    await ResolveConflictAsync(error);
                 }
             }
         }
 
-        async Task PullChangesAsync(bool forceFullSync = false)
+        async Task PullChangesAsync()
         {
-            if (!(await CrossConnectivity.Current.IsRemoteReachable(client.MobileAppUri, TimeSpan.FromSeconds(5))))
-            {
-                Debug.WriteLine($"Cannot connect to {client.MobileAppUri}. Appears to be offline");
+            if (!await IsOnlineAsync())
                 return;
-            }
 
             // Pull changes from Azure back down to our copy
             // We pull the entire table down incrementally, unless a full sync is required.
             // We could also cache off specific queries - but that would require more round trips
             // to Azure which we want to avoid since we use all the data ..
-            string queryName = $"sync_{nameof(CircleMessage)}";
-            await messages.PullAsync(forceFullSync ? null:queryName, messages.CreateQuery()).ConfigureAwait(false);
+            await messages.PullAsync($"sync_{nameof(CircleMessage)}", 
+                                     messages.CreateQuery())
+                          .ConfigureAwait(false);
         }
 
-        async Task ResolveConflictAsync(MobileServiceTableOperationError error)
+        Task ResolveConflictAsync(MobileServiceTableOperationError error)
         {
             var serverItem = error.Result.ToObject<CircleMessage>();
             var localItem = error.Item.ToObject<CircleMessage>();
@@ -125,13 +124,13 @@ namespace MyCircle.Services
             if (serverItem.Equals(localItem))
             {
                 // Items are identical, ignore the conflict; server wins.
-                await error.CancelAndDiscardItemAsync().ConfigureAwait(false);
+                return error.CancelAndDiscardItemAsync();
             }
             else
             {
                 // otherwise, the client wins.
                 localItem.Version = serverItem.Version;
-                await error.UpdateOperationAsync(JObject.FromObject(localItem)).ConfigureAwait(false);
+                return error.UpdateOperationAsync(JObject.FromObject(localItem));
             }
         }
     }
