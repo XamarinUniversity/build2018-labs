@@ -1,6 +1,6 @@
 # //BUILD 2018 Workshops by Xamarin University
 
-This repository contains the start/end projects and the instructions used at //BUILD 2018 in San Francisco.
+This repository contains the start/end projects and the instructions used at //BUILD 2018 in Seattle.
 
 There are two lab exercises included.
 
