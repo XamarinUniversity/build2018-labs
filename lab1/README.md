@@ -2,7 +2,9 @@
 
 In this lab, you will go through creating a new cross-platform mobile application using the Xamarin tools for Visual Studio and Xamarin.Forms.
 
-![Final app](media/image24.png)
+The app you will build is called **Minutes**; a tracking application which can be used to take notes during meetings, keep track of things assigned to you, or log your own personal thoughts.
+
+![Final app running on UWP](media/image24.png)
 
 ## Table of Contents
 
@@ -30,8 +32,6 @@ This lab uses Visual Studio on Windows with the Xamarin mobile workload installe
 
 ## What you will learn
 You will create a new Xamarin.Forms application and see how to construct a basic UI using XAML, connect the UI to behavior in C# code, and navigate between multiple screens, sharing the data between them.
-
-The app you will build is called **Minutes**; a tracking application which can be used to take notes during meetings, keep track of things assigned to you, or log your own personal thoughts. 
 
 ## 1. Create solution
 You will create a new Xamarin.Forms application using the Visual Studio 2017 *New Project* wizard. 
@@ -1318,3 +1318,8 @@ public async Task UpdateAsync(NoteEntry entry)
 
 6. Run the app again; you should _still_ see your data.
 
+## Congratulations!
+
+You have completed this lab and built a Xamarin.Forms application that runs on multiple platforms, manipulates data, uses multiple screens, and stores data in a local file!
+
+Keep learning about building mobile apps with Xamarin by creating a FREE account at [Xamarin University](https://university.xamarin.com)!
