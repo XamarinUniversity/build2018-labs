@@ -4,7 +4,7 @@
 
 In this lab you will modify a Xamarin.Forms application to utilize a few Azure services. 
 
-The app you will be working with is a community chat application named **My Circle**. It's a very simple application which allows a group of people to communicate in a public forum. Initially, it will work with local data only (mostly generated randomly), your goal will be to connect this app to Azure and provide a global, cloud-based data store so the app becomes a community connected application.
+The app you will be working with is a community chat application named **My Circle**. It's a  simple application which allows a group of people to communicate in a public forum. Initially, it will work with local data only (mostly generated randomly). Your goal will be to connect this app to Azure and provide a global, cloud-based data store so the app becomes a community connected application.
 
 ![My Circle running on UWP](media/image1.png) 
 
@@ -17,9 +17,9 @@ The app you will be working with is a community chat application named **My Circ
 
 ## Prerequisites
 
-This lab uses Visual Studio on Windows with the Xamarin mobile workload installed. It utilizes an existing Xamarin.Forms application with target projects for iOS, Android, Windows (UWP), and macOS. You can also use Visual Studio for Mac to complete this lab, however a few of the steps might not match completely.
+This lab uses Visual Studio 2017 on Windows with the Xamarin mobile workload installed. It utilizes an existing Xamarin.Forms application with target projects for iOS, Android, Windows (UWP), and macOS. You can also use Visual Studio for Mac to complete this lab, however a few of the steps might not match completely.
 
-> **Note** This lab assumes you are running Visual Studio on Windows 10 Fall Creators Update. If you are using an older version of Windows, you might be unable to run the UWP version of the application. In this case, you can skip those sections and concentrate on either iOS and/or Android.
+> **Note** This lab assumes you are running Visual Studio on Windows 10 Fall Creators Update. If you are using an older version of Windows, you might not be able to run the UWP version of the application. In this case, you can skip those sections and concentrate on either iOS and/or Android.
 
 ## What you will learn
 This lab focuses on integrating Azure services into a Xamarin app - particularly the services built specifically for Mobile Apps. At the end of the lab, you will have a good understanding of how to leverage these services in your own apps, as well as a starting point to explore other Azure services.
@@ -38,7 +38,7 @@ You can download the starter code [here](https://github.com/XamarinUniversity/bu
 git clone https://github.com/XamarinUniversity/build2018-labs.git
 ```
 
-> **Note:** There are two labs in this Github repository, make sure you are working with the contents of the **lab2** folder for this walk-through.
+> **Note:** There are two labs in this Github repository. Make sure you are working with the contents of the **lab2** folder for this walk-through.
 
 ## Explore the Starter Solution
 
@@ -70,7 +70,7 @@ All of the changes will be in the first project. This is a .NET Standard library
 
 The **Data** folder holds model objects - these are underlying data objects which represent some state in the app. 
 
-The only model object defined is the `CircleMessage` which is used to represent a single message sent or received from the app. It holds the `Author`, `Color`, and `Text` for a single message.
+The only model object defined is `CircleMessage` which is used to represent a single message sent or received from the app. It holds the `Author`, `Color`, and `Text` for a single message.
 
 ### Services Folder
 
@@ -84,12 +84,12 @@ The **Services** folder holds global services used by the application to perform
 
 ### ViewModels Folder
 
-The app relies on the [Model-View-ViewModel design pattern](https://docs.microsoft.com/en-us/xamarin/xamarin-forms/enterprise-application-patterns/mvvm) to provide bindable view-centric data objects for the UI to display. The **ViewModels** folder defines each of the bindable ViewModels.
+The app relies on the [Model-View-ViewModel design pattern](https://docs.microsoft.com/en-us/xamarin/xamarin-forms/enterprise-application-patterns/mvvm) to provide bindable view-centric data objects for the UI. The **ViewModels** folder defines each of the bindable ViewModels.
 
 | ViewModel | Description |
 |-----------|-------------|
 | `BasePageViewModel` | A base class for `MainViewModel` and `DetailsViewModel` which have some shared functionality. In particular, this class supports adding a new `CircleMessage` to the system and providing a collection of `CircleMessageViewModel` objects for the UI to display. |
-| `CircleMessageViewModel` | A bindable wrapper around the `CircleMessage` data model. |
+| `CircleMessageViewModel` | A bindable wrapper around the `CircleMessage` data model |
 | `DetailsViewModel` | The ViewModel for the `DetailsPage` |
 | `LoginViewModel` | The ViewModel for the `LoginPage` |
 | `MainViewModel` | The ViewModel for the `MainPage` |
@@ -107,7 +107,7 @@ The app uses [XAML](https://docs.microsoft.com/en-us/xamarin/xamarin-forms/xaml/
 | **LoginPage.xaml** | This page is the first displayed UI in the app when the app has not been launched before. It allows the user to enter their name and select a color for their messages. You can also reach this app by tapping the Logout button on the main page. |
 | **MainPage.xaml** | This page is the primary page which displays all the "root" conversations - these are starting points for any conversation thread. You can tap on a specific message to display the details. |
 | **MessagesView.xaml** | This is a `ContentView` which is shared between the **MainPage.xaml** and **DetailsPage.xaml** to display a list of messages and a "New Message" `Entry` UI widget. |
-| **SpeechTranslatorPage.xaml** | This is a starting point for the UI related to **part2** of the lab. It is incomplete and will be utilized as part of that step. |
+| **SpeechTranslatorPage.xaml** | This is a starting point for the UI related to **part2** of the lab. It is incomplete and will be used as part of that step. |
 
 ## Run the starter application
 
@@ -157,7 +157,7 @@ If you want to use the pre-supplied service, you can skip to [Part One](#part-1-
 
 1. Open Visual Studio for Windows.
 
-2. Use the **File** > **New** > **Project...** menu option to open the New Project wizard
+2. Use the **File** > **New** > **Project...** menu option to open the New Project wizard.
 
 3. Select the **Visual C#** > **Web** > **ASP.NET Web Application (.NET Framework)** template.
 
@@ -209,7 +209,7 @@ public class CircleMessage : EntityData
 
 3. Rename the class and file (using the same steps as above) to **CircleMessageController**.
 
-4. Go through the class and replace all text references of "Todo" with "CircleMessage". This mostly affects comments, but there are a few method names which are changed too. You can do a global rename within the class if you like - these methods aren't referenced in code anywhere but are instead dispatched through the ASP.NET MVC framework.
+4. Go through the class and replace all text references of "Todo" with "CircleMessage". This mostly affects comments, but there are a few method names which are changed too. You can do a global rename within the class if you like - these methods aren't referenced anywhere in the code; instead, they are dispatched through the ASP.NET MVC framework.
 
 ### Rename the DbSet accessor
 
@@ -255,7 +255,7 @@ public class CircleMessage : EntityData
 https://<APPNAME>.azurewebsites.net
 ```
 
-## Part 1: add support for Azure
+## Part 1: Add support for Azure
 
 In this first part, you will replace the test `InMemoryRepository` class with an Azure version that connects to an existing Azure Mobile App Service.
 
@@ -419,9 +419,9 @@ public static IAsyncMessageRepository Repository = new AzureMessageRepository();
 
 4. Build the solution and cleanup any compilation errors.
 
-### Fixup the data model
+### Update the data model
 
-You could run the app now, but it will have a runtime failure. The problem is that the `CircleMessage` definition doesn't _quite_ match the server implementation. There are two things that need to change:
+If you run the app now, it will have a runtime failure. The `CircleMessage` definition doesn't _quite_ match the server implementation. There are two things that need to change:
 
 1. The server should be assigning the primary key (`Id`) and creation date. Currently, the code is doing that in the `CircleMessage` constructor. That code needs to be removed.
 
@@ -458,13 +458,13 @@ public class CircleMessage
 
 ## Part 2: Add Speech Services
 
-Now that the app is talking to Azure, let's utilize another Azure service to give some more features to the app - translating speech into text.
+Now that the app is talking to Azure, let's use another Azure service to give some more features to the app - translating speech into text.
 
 You will be using two NuGet based plug-ins for this:
 
-1. [Xam.Plugin.SimpleAudioRecorder](https://www.nuget.org/packages/Xam.Plugin.SimpleAudioRecorder/0.3.0-beta) to record audio on the device in a cross-platform fashion. This component is open source and you can check out the implementation [here](https://github.com/adrianstevens/Xamarin-Plugins).
+1. [Xam.Plugin.SimpleAudioRecorder](https://www.nuget.org/packages/Xam.Plugin.SimpleAudioRecorder/) to record audio on the device in a cross-platform fashion. This component is open source and you can check out the implementation [here](https://github.com/adrianstevens/Xamarin-Plugins).
 
-2. [Plugin.SpeechToText](https://www.nuget.org/packages/Plugin.SpeechToText/0.1.0-beta) to call Azure and translate the recorded speech to text using the [Bing Speech API](https://azure.microsoft.com/en-us/services/cognitive-services/speech/). Note that while the Azure service supports multiple languages, this specific component only works for spoken English.
+2. [Plugin.SpeechToText](https://www.nuget.org/packages/Plugin.SpeechToText/) to call Azure and translate the recorded speech to text using the [Bing Speech API](https://azure.microsoft.com/en-us/services/cognitive-services/speech/). Note that while the Azure service supports multiple languages, this specific component only works for spoken English.
 
 The lab uses this component for convenience since it's mostly boiler plate code, but it's useful to look at the technique used. 
 
@@ -557,7 +557,7 @@ async Task<SpeechToTextResult> SendRequestAsync(Stream mediaStream, string authT
 	string url = "https://speech.platform.bing.com/speech/recognition/dictation/cognitiveservices/v1" + 
 		"?language=en-us&format=simple";
 
-	HttpClient client = new HttpClient();
+	var client = new HttpClient();
 	client.DefaultRequestHeaders.Authorization = 
 	  new AuthenticationHeaderValue("Bearer", authToken);
 
@@ -755,7 +755,7 @@ var speechResult = await speechClient.RecognizeSpeechAsync(
 
 It would be a huge privacy issue if your devices could record you indiscriminately without your knowledge. That's why the recording code isn't working yet - it either fails at runtime, or gets ignored by the platform.
 
-You will need to do two things.
+You will need to do two things:
 
 1. Add a permissions declaration into the app. This is a notification that the app _might_ use the given requested feature.
 
@@ -940,7 +940,7 @@ Support for offline caching is provided through SQLite, but it requires us to in
 ```csharp
 public sealed class AzureMessageRepository ...
 {
-	...
+    ...
     IMobileServiceSyncTable<CircleMessage> messages;
 
     public AzureMessageRepository()
@@ -977,7 +977,7 @@ var store = new MobileServiceSQLiteStore("offlinecache.db");
 store.DefineTable<CircleMessage>();
 ```
 
-8. Next, call `client.SyncContext.InitializeStore` passing the **store** object - this will initialize the offline support through an intermediary built-in class named the "SyncContext".
+8. Call `client.SyncContext.InitializeStore` passing the **store** object - this will initialize the offline support through an intermediary built-in class named the "SyncContext".
 
 ```csharp
 await client.SyncContext.InitializeAsync(store);
@@ -1032,7 +1032,7 @@ public CircleMessage(string parentId)
 
 ### Add support to pull remote changes from Azure
 
-Pulling down changes is done _incrementally_ by defining a unique query with an assigned name. When you ask for new changes, you use the same query and name, and the library _automatically_ fetches only changed records from the last time you did a pull from the server.
+Pulling changes is done _incrementally_ by defining a unique query with an assigned name. When you ask for new changes, you use the same query and name, and the library _automatically_ fetches only changed records from the last time you did a pull from the server.
 
 The first time, this will take some time - as all records are retrieve (in 50 count batches), but after that, it's quite fast unless the table has a lot of churn.
 
@@ -1053,10 +1053,9 @@ The first time, this will take some time - as all records are retrieve (in 50 co
 ```csharp
 async Task PullChangesAsync()
 {
-await messages.PullAsync(
-				$"sync_{nameof(CircleMessage)}", 
-				messages.CreateQuery())
-			.ConfigureAwait(false);
+    await messages.PullAsync($"sync_{nameof(CircleMessage)}", 
+                             messages.CreateQuery())
+        .ConfigureAwait(false);
 }
 ```
 
