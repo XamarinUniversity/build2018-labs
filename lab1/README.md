@@ -1,5 +1,7 @@
 # Build My First Xamarin App
 
+## Estimated completion time: 60-75 minutes
+
 In this lab, you will go through creating a new cross-platform mobile application using the Xamarin tools for Visual Studio and Xamarin.Forms.
 
 The app you will build is called **Minutes**; a tracking application which can be used to take notes during meetings, keep track of things assigned to you, or log your own personal thoughts.
