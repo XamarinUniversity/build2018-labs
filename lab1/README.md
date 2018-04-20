@@ -1,18 +1,38 @@
 # Build My First Xamarin App
 
-In this walk-through, we will create a new cross-platform mobile applicarion using the Xamarin tools for Visual Studio and Xamarin.Forms.
+In this lab, you will go through creating a new cross-platform mobile application using the Xamarin tools for Visual Studio and Xamarin.Forms.
 
-We will use Visual Studio on Windows, so we get projects for Windows, Android, and iOS. You can also create the solution using Visual Studio for Mac; however, this will only create projects targeting Android and iOS.
+## Table of Contents
+
+1. [Create solution](#1-create-solution)
+2. [Explore the project](#2-explore-the-project)
+3. [Run on Windows](#3-run-on-windows)
+4. [Run on Android](#4-run-on-android)
+5. [Run on iOS](#5-run-on-ios)
+6. [Code the NoteEntry class](#6-code-the-noteentry-class)
+7. [Add a storage interface](#7-add-a-storage-interface)
+8. [Code the MemoryEntryStore class](#8-code-the-memoryentrystore-class)
+9. [Build the list of notes in XAML](#9-build-the-list-of-notes-in-XAML)
+10. [Use a better visualization for the notes](#10-use-a-better-visualization-for-the-notes)
+11. [Add the edit screen](#11-add-the-edit-screen)
+12. [Create a new note](#12-create-a-new-note)
+13. [Delete a note](#13-delete-a-note)
+14. [Add persistent storage](#14-add-persistent-storage)
+
+
+## Prerequisites
+
+This lab uses Visual Studio on Windows with the Xamarin mobile workload installed. It demonstrates projects for Windows, Android, and iOS. You can also use Visual Studio for Mac; however, this will only create projects targeting Android and iOS and a few of the steps might not match completely.
 
 > **Note** This lab assumes you are running Visual Studio 2017 on Windows 10 Fall Creators Update. If you are using an older version of Windows, you might be unable to run the UWP version of the application. In this case, you can skip those sections and deploy on either iOS and/or Android.
 
 ## What you will learn
-We will create a new Xamarin.Forms application and see how to construct a basic UI using XAML, connect the UI to behavior in C# code, and navigate between multiple screens, sharing the data between them.
+You will create a new Xamarin.Forms application and see how to construct a basic UI using XAML, connect the UI to behavior in C# code, and navigate between multiple screens, sharing the data between them.
 
-The app we will build is called Minutes; a tracking application which can be used to take notes during meetings, keep track of things assigned to you, or log your own personal thoughts. 
+The app you will build is called **Minutes**; a tracking application which can be used to take notes during meetings, keep track of things assigned to you, or log your own personal thoughts. 
 
-## Create solution
-We will create a new Xamarin.Forms application using the Visual Studio 2017 *New Project* wizard. 
+## 1. Create solution
+You will create a new Xamarin.Forms application using the Visual Studio 2017 *New Project* wizard. 
 
 ### Select template
 
@@ -30,7 +50,7 @@ We will create a new Xamarin.Forms application using the Visual Studio 2017 *New
 
 ![Select the Cross-Platform App template](media/image1.png)
 
-> **Note:** On Windows, we recommend using a folder close to the root of your drive to avoid path-length issues.
+> **Note:** On Windows, it's recommended to use a location close to the root to avoid path-length issues.
 
 7.  Click the **OK** button.
 
@@ -47,7 +67,7 @@ We will create a new Xamarin.Forms application using the Visual Studio 2017 *New
 
 4.  Click the **OK** button to create the solution.
 
-## Explore the project
+## 2. Explore the project
 
 The wizard will create four projects: one for the shared code (as a .NET Standard library) and three for the platform-specific apps which can be run on the actual devices or simulator/emulators. 
 
@@ -60,9 +80,9 @@ The wizard will create four projects: one for the shared code (as a .NET Standar
 | **Minutes.iOS** | The Xamarin.iOS project which generated the iOS-specific binary package which can be run on iPhone and iPad devices. |
 | **Minutes.UWP** | The Universal Windows project which can be run on Windows 10 devices. This project is only available when you create the solution with Visual Studio for Windows. |
 
-## Run on Windows
+## 3. Run on Windows
 
-Execute the **Minutes.UWP** app on Windows. We will run on the Local Machine instead of the Windows simulator. This will give us quick deployment and fast startup which is convenient during development and testing.
+Execute the **Minutes.UWP** app on Windows. Make sure to select **Local Machine** so it runs locally vs. in a simulator. This will give you a much quicker deployment and startup time which is convenient during development and testing.
 
 > **Note:** This requires Windows 10 Fall Creators Update.
 
@@ -90,9 +110,9 @@ Execute the **Minutes.UWP** app on Windows. We will run on the Local Machine ins
 
 ![UWP app](media/image3.5.png)
 
-## Run on Android
+## 4. Run on Android
 
-Execute the **Minutes.Android** app on Windows. We will use an Android emulator to run the application because it lets us test on different Android versions and form factors.
+Execute the **Minutes.Android** app on an Android device or emulator. The instructions will show using an emulator, however, if a physical device is plugged in via USB, it should show up in the devices drop down as well.
 
 ### Set Startup Project
 
@@ -114,13 +134,19 @@ Execute the **Minutes.Android** app on Windows. We will use an Android emulator 
 
 ![Select an Android emulator](media/image8.png)
 
+If you don't see any Android devices, you might need to do some setup to get them to display.
+
+- [Set up the Android emulators in Visual Studio](https://docs.microsoft.com/en-us/xamarin/android/get-started/installation/android-emulator/)
+
+- [Set up your Android Device for Development](https://docs.microsoft.com/en-us/xamarin/android/get-started/installation/set-up-device-for-development)
+
 3.  Click the **Debug Target** button to run the app.
 
 ![Run Android app](media/image8.5.png)
 
-## Run on iOS
+## 5. Run on iOS
 
-Run the **Minutes.iOS** app from either macOS or Windows. We will use the iOS simulator to avoid the need for a physical device.
+Run the **Minutes.iOS** app from either macOS or Windows. You can use the iOS simulator to avoid the need for a physical device. You can also use a physical iOS device [if it's been provisioned for development](https://university.xamarin.com/lightninglectures).
 
 > **Note:** You need a network connected Mac for this step; part of the build process and execution of the iOS simulator must occur on a Mac.
 
@@ -168,9 +194,9 @@ You can run the iOS app directly through Visual Studio for Mac, or through the r
 
 ![Run the iOS app](media/image18.5.png)
 
-## Code the Entry class
+## 6. Code the NoteEntry class
 
-Next we will implement the **Entry** data-model class which will hold the data for each Minutes entry we put into the app.
+Next you will implement the **NoteEntry** data-model class that holds the data for each entry put into the app.
 
 ### Create the C# class
 
@@ -194,7 +220,7 @@ namespace Minutes.Data
 }
 ```
 
-### Add public properties to hold our data
+### Add public properties to hold the data
 
 1.  Add a public, read-write property of type `string` to the **Entry** class named **Title**.
 
@@ -259,9 +285,9 @@ public class NoteEntry
 }
 ```
 
-## Add an interface for the storage class
+## 7. Add a storage interface
 
-Next, we will define an _abstraction_ for our storage class. We will start with a basic in-memory implementation so we can build the UI and test out our logic. Later, ee will switch to local storage so our **Entry** data is persisted to the device.
+Next, you will define an _abstraction_ for the storage class that collects all the notes together. You will start with a basic in-memory implementation so you can build the UI and test out the logic. Later, you can switch to a persistent file so the **NoteEntry** data is saved to the device.
 
 ### Add a new interface
 
@@ -287,7 +313,7 @@ namespace Minutes
 }
 ```
 
-> Notice we are using `System.Threading.Tasks.Task` for all the return types. Later, we will move to a file-based storage model which uses asynchronous APIs. 
+> Notice the code is using `System.Threading.Tasks.Task` for all the return types. This is preparation for a later step where you will switch to a file-based storage model that uses asynchronous I/O APIs. 
 
 | Method          | Purpose |
 |-----------------|---------|
@@ -297,9 +323,9 @@ namespace Minutes
 | `UpdateAsync`   | Update an existing entry in the collection. |
 | `DeleteAsync`   | Deletes an existing entry in the collection. |
 
-## Code the MemoryEntryStore class
+## 8. Code the MemoryEntryStore class
 
-Now, we will code the **MemoryEntryStore** class, which will store a collection of **Entry** objects in memory. This will implement our `INoteEntryStore` interface.
+Now, you will code the **MemoryEntryStore** class, which will store a collection of **Entry** objects in memory. This will implement the `INoteEntryStore` interface.
 
 ### Create the class
 
@@ -343,7 +369,7 @@ public Task AddAsync(NoteEntry entry)
 }
 ```
 
-6. Implement `UpdateAsync` by returning `Task.CompletedTask`. We aren't storing the data anywhere but in memory so there's no work to do.
+6. Implement `UpdateAsync` by returning `Task.CompletedTask`. The code isn't storing the data anywhere except memory so there's no work to do.
 
 7. Implement `DeleteAsync` just like `AddAsync`; remove the item from the dictionary and return `Task.CompletedTask`.
 
@@ -409,7 +435,7 @@ namespace Minutes.Data
 
 1. Open the file **App.xaml.cs** in the shared-code project.
 
-2. Add the static property shown below to the **App** class. This will allow us to access our note storage from anywhere in the application.
+2. Add the static property shown below to the **App** class. This will allow us to access the note storage from anywhere in the application.
 
 ```csharp
 public static INoteEntryStore Entries { get; set; }
@@ -441,11 +467,11 @@ public partial class App : Application
 }
 ```
 
-## Code the EntriesPage using XAML
+## 9. Build the list of notes in XAML
 
-We will create the UI to display all our `NoteEntry` objects. This will replace the default UI we saw earlier.
+The next task is to create the UI to display all the `NoteEntry` objects. This will replace the default UI you saw earlier.
 
-We will display the list of `NoteEntry` objects in a **ListView** using the default visualization. The `ListView` class is used in Xamarin.Forms to display a scrollable, selectable list of data items. You see this style of UI in many mobile applications, and it's straight-forward to create in Xamarin.Forms.
+You will display the list of `NoteEntry` objects in a **ListView** using the default visualization. The `ListView` class is used in Xamarin.Forms to display a scrollable, selectable list of data items. You see this style of UI in many mobile applications, and it's straight-forward to create in Xamarin.Forms.
 
 ### Add a ListView
 
@@ -466,7 +492,7 @@ We will display the list of `NoteEntry` objects in a **ListView** using the defa
 
 3. Add a `ListView` inside the **ContentPage** tags.
 
-> **Note:** Please use traditional start and end tags for the `ListView` instead of a self-closing tag; we will add code inside the `ListView` tags in a later step.
+> **Note:** Please use traditional start and end tags for the `ListView` instead of a self-closing tag; you will add code inside the `ListView` tags in a later step.
 
 4. Use **x:Name** to assign the name **entries** to the `ListView`.
 
@@ -482,7 +508,7 @@ We will display the list of `NoteEntry` objects in a **ListView** using the defa
 
 2. Override the `OnAppearing` method in the **MainPage** class.
 
-3. We will be calling a `Task`-based method; add the `async` keyword to the `OnAppearing` method in front of the return type (`void`).
+3. You will be calling a `Task`-based method so add the `async` keyword to the `OnAppearing` method in front of the return type (`void`).
 
 3. Inside `OnAppearing`, load the list of entries into the `ListView`. Make sure to use the `await` keyword as shown below:
 
@@ -498,17 +524,17 @@ protected override async void OnAppearing()
 
 ![Running on UWP](media/image20.png)
 
-## Specify a NoteEntry's visualization in a ListView
+## 10. Use a better visualization for the notes
 
-We will customize the display of `NoteEntry` objects in the `ListView`. Currently, it is calling the `ToString` implementation to get a textual representation and  displaying it within a `Label` for each `NoteEntry`.
+Next, you will customize the display of `NoteEntry` objects in the `ListView`. Currently, it is calling the `ToString` implementation to get a textual representation and  displaying it within a `Label` for each `NoteEntry`.
 
-We'll change this by using a `DataTemplate` to direct the `ListView` on the proper visualization to use for each item.
+You'll change this by using a `DataTemplate` to direct the `ListView` on the proper visualization to use for each item.
 
 There are two options available to us: First, (and best if it works for your app), is to use a built-in template. These are optimized and often correspond directly to a platform's native representation. This approach allows for one or two text items and an optional image.
 
 If your app has requirements for displaying each item that cannot be fulfilled with these templates, you can define a [fully custom view](https://docs.microsoft.com/en-us/xamarin/xamarin-forms/app-fundamentals/custom-renderer/viewcell).
 
-Since we just have text in our `NoteEntry` objects, we will use a built-in template: the `TextCell`.
+Since the `NoteEntry` objects just have text, you can use a built-in template: the `TextCell`.
 
 ### Specify the DataTemplate
 
@@ -549,7 +575,7 @@ The code is shown below for convenience.
 
 ### Add the data bindings
 
-We want to display the data from each `NoteEntry` object. To do this, we will utilize a built-in feature of Xamarin.Forms: data binding.
+The goal is to display the data from each `NoteEntry` object. To do this, the app will utilize a built-in feature of Xamarin.Forms: **data binding**.
 
 1. Open **MainPage.xaml** in the shared-code project.
 
@@ -580,9 +606,9 @@ We want to display the data from each `NoteEntry` object. To do this, we will ut
 
 ![Running on UWP](media/image21.png)
 
-## Adding a new Editing screen
+## 11. Add the edit screen
 
-Now that we are displaying our notes, let's add a new screen that lets us add or edit items so we can customize the data.
+Now that the app is displaying notes, let's add a new screen to add / edit items so the user can customize the data.
 
 ### Create a new XAML ContentPage
 
@@ -598,11 +624,11 @@ Now that we are displaying our notes, let's add a new screen that lets us add or
 
 5. Click **Add** to add the page.
 
-This will add two files to the project: a XAML file which has the UI definition, and a C# code behind file where our page-specific behavior can be coded.
+This will add two files to the project: a XAML file which has the UI definition, and a C# code behind file where the page-specific behavior can be coded.
 
 ### Navigate to the new page
 
-Now let's update our code to display the new page when we tap on one of our items in the `ListView`.
+Now, update the code to display the new page when the user taps on one of the items in the `ListView`.
 
 1. Open the **MainPage.xaml.cs** code behind file.
 2. Locate the constructor, after the call to `InitializeComponent`, add an event handler to the `entries.ItemTapped` event. Name the method `OnItemTapped`.
@@ -618,7 +644,7 @@ entries.ItemTapped += OnItemTapped;
 
 6. That method is async, so apply the `async` and `await` keywords.
 
-6. Since we want the page to know about the selected `NoteEntry`, pass it into the constructor; you will need to modify the constructor of the `NoteEntryEditPage` to take this and cache it into a private field.
+6. The page needs to know about the selected `NoteEntry`, an easy way to do this is to pass it into the constructor. Modify the constructor of the `NoteEntryEditPage` to take a `NoteEntry` and cache it into a private field.
 
 ```csharp
 private async void OnItemTapped(object sender, ItemTappedEventArgs e)
@@ -638,7 +664,7 @@ public NoteEntryEditPage (NoteEntry entry)
 }
 ```
 
-7. Xamarin.Forms uses a standard paradigm for navigation; we used the method above (`Navigation.PushAsync`). To work on all platforms, we need to add in a `NavigationPage` into our UI structure. Open the **App.xaml.cs** source file.
+7. Xamarin.Forms uses a standard paradigm for navigation; you used the method above (`Navigation.PushAsync`). To work on all platforms, you will need to add in a `NavigationPage` into the UI structure. Open the **App.xaml.cs** source file.
 
 8. Locate the assignment of the `MainPage` property in the constructor.
 
@@ -655,7 +681,7 @@ public App ()
 
 10. Run the app on at least one platform and tap on an entry in the `ListView`. It should navigate to your second page and display "Welcome to Xamarin.Forms!". You can go back using the built-in **Back** button located in the top-left corner.
 
-11. You can customize the colors presented along the top of the `NavigationPage`. Let's update our page to use the same Blue as the launch screen. On the `NavigationPage` class:
+11. You can customize the colors presented along the top of the `NavigationPage`. Let's update the page to use the same Blue as the launch screen. On the `NavigationPage` class:
     - Set the `BarBackgroundColor` property to `Color.FromHex("#3498db")`
     - Set the `BarTextColor` property to `Color.White`
 
@@ -716,7 +742,7 @@ Next, let's change the second page UI to display the selected note's details.
 
 4. Next, add `Binding` statements to the `Entry`, `Label`, and `Editor` controls which have **Bind to xxx** on the `Text` properties. Remember that the binding objects take the form `{Binding PROPERTY_NAME}`.
 
-5. The `Entry` and `Editor` are both _editing_ controls - the first for editing a single line of text, the second for multi-line editing. In XAML data binding, it's good practice to let the binding know you want to utilize two-way bindings and _push_ changes from the UI element back to the data source. We do this by specifying `Mode=TwoWay` on the binding itself. Make sure to apply this for both the `Entry` and `Editor` binding objects as shown below.
+5. The `Entry` and `Editor` are both _editing_ controls - the first for editing a single line of text, the second for multi-line editing. In XAML data binding, it's good practice to let the binding know you want to utilize two-way bindings and _push_ changes from the UI element back to the data source. You can do this by specifying `Mode=TwoWay` on the binding itself. Make sure to apply this for both the `Entry` and `Editor` binding objects as shown below.
 
 
 ```xml
@@ -728,7 +754,7 @@ Next, let's change the second page UI to display the selected note's details.
 ```
 
 
-6. The `CreatedDate` will display an (obnoxiously) long date format by default since it's a `DateTime` object. One cool trick you can use in Xamarin.Forms data binding is to provide a format string that's used when the object's `ToString()` is called. This is done through the `StringFormat` property on the binding. Use `'{0:g}'` for the `CreatedDate` so we get a "General" date/time string as shown below.
+6. The `CreatedDate` will display an (obnoxiously) long date format by default since it's a `DateTime` object. One cool trick you can use in Xamarin.Forms data binding is to provide a format string that's used when the object's `ToString()` is called. This is done through the `StringFormat` property on the binding. Use `'{0:g}'` for the `CreatedDate` so the app displays a "General" date/time string. The code is shown below for convenience.
 
 ```xml
 <Label Text="{Binding CreatedDate, StringFormat='Created: {0:g}'}" TextColor="Gray" HorizontalTextAlignment="End" />
@@ -750,13 +776,13 @@ Next, let's change the second page UI to display the selected note's details.
 
 ![App running on UWP](media/image23.png)
 
-10. Try editing an entry's title and then pressing the Back button; it should be changed on the main page as well since we are using the same object. However, this is actually a bug since we aren't currently using our `UpdateAsync` method; it's just lucky that it works in _this_ case. 
+10. Try editing an entry's title and then pressing the **Back** button; it should be changed on the main page as well since it is referencing the same object in memory. However, this is _actually_ a bug since the code isn't calling `UpdateAsync`; it's just lucky that it works in _this_ case. 
 
 11. Open the **NoteEntryEditPage.xaml.cs** code behind file.
 
-12. Override the `OnDisappearing` method. This is called when the page is being destroyed and we are going backwards to the main page.
+12. Override the `OnDisappearing` method. This is called when the page is being destroyed and the app is transitioning back to the main page.
 
-13. If the `entry` field is not `null`, then call our `App.Entries.UpdateAsync` method to update the values in our note storage. You will need to apply the `async` and `await` keywords.
+13. If the `entry` field is not `null`, then call `App.Entries.UpdateAsync` to update the values in the note storage. You will need to apply the `async` and `await` keywords.
 
 ```csharp
 protected override async void OnDisappearing()
@@ -774,15 +800,15 @@ protected override async void OnDisappearing()
 
 ### Setting focus
 
-When we edit an entry, we often want to immediately begin typing. Currently, we must tap on the field to begin editing. Let's change that behavior by setting focus automatically.
+When the user edits an entry, they will often want to immediately begin typing. Currently, the user must tap on the field to begin editing. Let's change that behavior by setting focus automatically.
 
 1. Open  **NoteEntryEditPage.xaml.cs**.
 
-2. Override the `OnAppearing` method and add a call to `textEditor.Focus()`. This will place focus on our `Editor` control when the screen is displayed.
+2. Override the `OnAppearing` method and add a call to `textEditor.Focus()`. This will place focus on the `Editor` control when the screen is displayed.
 
 3. Run the app and show the details for a note; it should show the onscreen keyboard for that item.
 
-> On some devices, typically phones, you might _not_ want this behavior since it can cover content on a small screen. We can restrict this to be desktop-only using the `Device.RuntimePlatform` flag.
+> On some devices, typically phones, you might _not_ want this behavior since it can cover content on a small screen. You can restrict this to be desktop-only using the `Device.RuntimePlatform` flag.
 
 4. In the `OnAppearing` override, check the `Device.RuntimePlatform` property for either `Device.macOS` or `Device.UWP` and only change focus if it's one of those two platforms.
 
@@ -798,7 +824,7 @@ protected override void OnAppearing()
 
 ### Adding a title
 
-Notice that the screen looks a bit crammed, and there's a blank bar across the top. Since we added navigation support, we now have a spot for a _Title_ to be displayed. Let's adjust a few properties on our main and detail pages to take advantage of this.
+Notice that the screen looks a bit crammed, and there's a blank bar across the top. This is due to the navigation support you just added to the app. This blank area is a convenient place for a _Title_ to be displayed. Let's adjust a few properties on the main and detail pages to take advantage of this.
 
 1. Open **NoteEntryEditPage.xaml** and locate the `ContentPage` root element.
 
@@ -820,7 +846,7 @@ Notice that the screen looks a bit crammed, and there's a blank bar across the t
 
 6. Run the app on at least one platform; notice the difference with the titles on each page.
 
-> On some platforms, you may notice that the `MainPage` title is being used as the "Back" text. Since that title is quite long, it can look akward, however we can fix that!
+> On some platforms, you may notice that the `MainPage` title is being used as the "Back" text. Since that title is quite long, it can look awkward - however there's a cool trick in Xamarin.Forms that will let you address that.
 
 7. Open **MainPage.xaml** and locate the root `ContentPage` element.
 
@@ -828,9 +854,9 @@ Notice that the screen looks a bit crammed, and there's a blank bar across the t
 
 9. Run the app on iOS and notice that the back text on the details page is now "Minutes".
 
-## Add support to create a new NoteEntry
+## 12. Create a new note
 
-Now that we can display and update our notes, let's add support to **Add** a new note. We'll do this by adding a new `Entry` to the **MainPage**.
+Now that the app can display and update notes, let's add support to **Add** a new note. You can do this by adding a new `Entry` edit box to the **MainPage**.
 
 ### Add a New Text Entry
 
@@ -882,11 +908,11 @@ public MainPage()
 
 5. If the string is _not_ empty, create a new `NoteEntry` object and use the text as the `Title`.
 
-6. Add the new note to our note entry store (`App.Entries.AddAsync`). Make sure to use the `await` keyword (which means you'll need to add an `async` keyword to the method!)
+6. Add the new note to the note entry store (`App.Entries.AddAsync`). Make sure to use the `await` keyword (which means you'll need to add an `async` keyword to the method!)
 
 7. Copy the code you used in `OnItemTapped` to navigate to the `NoteEntryEditPage` screen, passing it your new item. Make sure to use `await`.
 
-8. Finally, set the `newEntry.Text` property to an empty string to clear it out _after_ the navigation call - this will clear the UI but you won't see it until we navigate back.
+8. Finally, set the `newEntry.Text` property to an empty string to clear it out _after_ the navigation call - this will clear the UI so that the `Entry` is empty when the app navigates back to this page.
 
 ```csharp
 private async void OnAddEntry(object sender, EventArgs e)
@@ -910,9 +936,9 @@ private async void OnAddEntry(object sender, EventArgs e)
 
 ![Add a new note on UWP](media/image25.png)
 
-## Delete a note
+## 13. Delete a note
 
-The last operation we have to add is the support to _delete_ a note. We will do this by adding a button to the **Details** page.
+The final missing feature is support to _delete_ a note. You will do this by adding a button to the **Details** page.
 
 ### Add Toolbar button on the Details page
 
@@ -931,7 +957,7 @@ The last operation we have to add is the support to _delete_ a note. We will do 
 </ContentPage>
 ```
 
-> This will add a new Button to the navigation toolbar. Since we are using a `NavigationPage`, this is a great area to put extra functionality relevant to the screen.
+> This will add a new Button to the navigation toolbar. Since the app is using a `NavigationPage`, this is a great area to put extra functionality relevant to the screen.
 
 3. Open **NoteEntryEditPage.xaml.cs** and add an event handler method named **OnDeleteEntry** to handle the button click.
 
@@ -945,7 +971,7 @@ The last operation we have to add is the support to _delete_ a note. We will do 
 
 6. If the user taps "OK", remove the selected note (`entry` field) from the note store (`App.Entries.DeleteAsync`).
 
-7. Set the `entry` field to **null** so we don't try to update it later.
+7. Set the `entry` field to **null** so the code doesn't try to update it later.
 
 8. Call `Navigation.PopAsync` to return to the main screen. This is also an `await`able operation.
 
@@ -963,9 +989,9 @@ private async void OnDeleteEntry(object sender, EventArgs e)
 
 ### Add the delete.png image
 
-The `ToolbarItem` needs an image, particularly on UWP where no text is displayed by default. Images and graphics are often one of the areas where we will need to provide _platform-specific_ values because the sizes change from platform-to-platform.
+The `ToolbarItem` needs an image, particularly on UWP where no text is displayed by default. Images and graphics are often one of the areas where you will need to provide _platform-specific_ values because the sizes change from platform-to-platform.
 
-There are three folders in the [assets folder](https://github.com/XamarinUniversity/build2018-labs/tree/master/lab1/assets) included with this lab. We need to copy the images from the **ios**, **android**, and **windows** folders into the project.
+There are three folders in the [assets folder](https://github.com/XamarinUniversity/build2018-labs/tree/master/lab1/assets) included with this lab. You will need to copy the images from the **ios**, **android**, and **windows** folders into the project.
 
 #### Android
 
@@ -1013,9 +1039,9 @@ There are three folders in the [assets folder](https://github.com/XamarinUnivers
 
 4. Selecting "Yes" should delete the entry and return you to the main page and the will be gone; selecting "No" should stay on the details screen.
 
-## Adding a persistence storage
+## 14. Add persistent storage
 
-The final step is to add a persistence data store so that our notes are saved when we start and stop the app. We will store the list of notes in an XML file with the following structure:
+The final step is to add a persistence data store so that the notes are saved when the user starts and stops the app. It will store the list of notes in an XML file with the following structure:
 
 ```xml
 <minutes>
@@ -1025,7 +1051,7 @@ The final step is to add a persistence data store so that our notes are saved wh
 </minutes>
 ```
 
-This requires that we implement a new `INoteEntryStore` implementation to save to a file. You could also use SQLite, or a cloud service such as Azure to store your data.
+This requires that you implement a new `INoteEntryStore` implementation to save to a file. You could also use SQLite, or a cloud service such as Azure to store your data.
 
 ### Create the FileEntryStore
 
@@ -1033,7 +1059,7 @@ This requires that we implement a new `INoteEntryStore` implementation to save t
 
 2. Have the class implement the `INoteEntryStore` interface. You can right-click on the interface itself, select **Quick Actions and Refactorings...** and get Visual Studio to stub out all the required methods.
 
-3. Add a field of type `List<NoteEntry>` to hold the entries we have loaded (or saved) to the file. Name the field **loadedNotes**.
+3. Add a field of type `List<NoteEntry>` to hold the loaded entries from the file. Name the field **loadedNotes**.
 
 4. Add a field of type `string` to hold the filename.
 
@@ -1049,7 +1075,7 @@ this.filename = Path.Combine(Environment.GetFolderPath(
 
 ### Add code to read the file from disk
 
-1. Add a static method named `ReadDataAsync` to `FileEntryStore` that takes a `string` filename and returns a `Task<IEnumerable<NoteEntry>>`. Since it will load from a file, we want to use the async file I/O features of .NET; add the `async` keyword to the method signature.
+1. Add a static method named `ReadDataAsync` to `FileEntryStore` that takes a `string` filename and returns a `Task<IEnumerable<NoteEntry>>`. Since it will load from a file, it's more efficient to use the async file I/O features of .NET; add the `async` keyword to the method signature.
 
 ```csharp
 static async Task<IEnumerable<NoteEntry>> ReadDataAsync(string filename)
@@ -1159,7 +1185,7 @@ static async Task SaveDataAsync(string filename,
 
 ### Initialize the FileEntryStore
 
-1. Add a method named `InitializeAsync` that returns a `Task`. This method will be used to initialize our **loadedNotes** field. It will be called from each method to ensure we've read our initial data store.
+1. Add a method named `InitializeAsync` that returns a `Task`. This method will be used to initialize the **loadedNotes** field. It will be called from each method to ensure the data has been loaded prior to doing anything else.
 
 2. Check the **loadedNotes** field for `null`. If it is not initialized, call the `ReadDataAsync` method to get the `IEnumerable` of notes.
 
@@ -1258,7 +1284,7 @@ public async Task<NoteEntry> GetByIdAsync(string id)
 
 2. Call `InitializeAsync` to ensure the notes are loaded from disk. Use the `async` and `await` keywords.
 
-3. Add a test to ensure that the passed note is in our **loadedNotes** collection. If not, throw an exception.
+3. Add a test to ensure that the passed note is in the **loadedNotes** collection. If not, throw an exception.
 
 3. Call `SaveDataAsync` to push any changes to in-memory objects back to disk.
 
@@ -1282,7 +1308,7 @@ public async Task UpdateAsync(NoteEntry entry)
 
 2. Comment out the existing `MemoryEntryStore` and replace it with a new `FileEntryStore`.
 
-3. Comment out the `LoadMockData` call on the next line - we don't want out mock data anymore.
+3. Comment out the `LoadMockData` call on the next line - there's no need to use test data anymore.
 
 4. Run the app on at least one platform. You should be able to add/update and delete notes just as before.
 
