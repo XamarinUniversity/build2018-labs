@@ -2,6 +2,8 @@
 
 In this lab, you will go through creating a new cross-platform mobile application using the Xamarin tools for Visual Studio and Xamarin.Forms.
 
+[Final app](media/image24.png)
+
 ## Table of Contents
 
 1. [Create solution](#1-create-solution)
