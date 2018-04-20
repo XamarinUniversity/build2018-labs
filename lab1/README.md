@@ -14,7 +14,7 @@ In this lab, you will go through creating a new cross-platform mobile applicatio
 6. [Code the NoteEntry class](#6-code-the-noteentry-class)
 7. [Add a storage interface](#7-add-a-storage-interface)
 8. [Code the MemoryEntryStore class](#8-code-the-memoryentrystore-class)
-9. [Build the list of notes in XAML](#9-build-the-list-of-notes-in-XAML)
+9. [Build the list of notes in XAML](#9-build-the-list-of-notes-in-xaml)
 10. [Use a better visualization for the notes](#10-use-a-better-visualization-for-the-notes)
 11. [Add the edit screen](#11-add-the-edit-screen)
 12. [Create a new note](#12-create-a-new-note)
