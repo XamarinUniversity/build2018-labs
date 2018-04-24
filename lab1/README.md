@@ -239,10 +239,10 @@ The completed code is shown below:
 ```csharp
 public class NoteEntry
 {
-	public string Title { get; set; }
-	public string Text { get; set; }
-	public DateTime CreatedDate { get; set; }
-	public string Id { get; set; }
+    public string Title { get; set; }
+    public string Text { get; set; }
+    public DateTime CreatedDate { get; set; }
+    public string Id { get; set; }
 }
 ```
 
@@ -259,12 +259,12 @@ The completed code is shown below:
 ```csharp
 public class NoteEntry
 {
-	...
-	public NoteEntry()
-	{
-		CreatedDate = DateTime.Now;
-		Id = Guid.NewGuid().ToString();
-	}
+    ...
+    public NoteEntry()
+    {
+        CreatedDate = DateTime.Now;
+        Id = Guid.NewGuid().ToString();
+    }
 }
 ```
 
@@ -281,11 +281,11 @@ The completed code is shown below:
 ```csharp
 public class NoteEntry
 {
-	...
-	public override string ToString()
-	{
-		return $"{Title} {CreatedDate}";
-	}
+    ...
+    public override string ToString()
+    {
+        return $"{Title} {CreatedDate}";
+    }
 }
 ```
 
@@ -337,6 +337,12 @@ Now, you will code the **MemoryEntryStore** class, which will store a collection
 
 2.  Add `public` to the class definition.
 
+3.  Add the interface to the class definition.
+
+```csharp
+public class MemoryEntryStore : INoteEntryStore
+```
+
 ### Implement the methods
 
 1.  Add a private, readonly dictionary field of type `Dictionary<string,Entry>` to the class. Name it **entries**.
@@ -345,10 +351,11 @@ Now, you will code the **MemoryEntryStore** class, which will store a collection
 private readonly Dictionary<string, NoteEntry> entries = new Dictionary<string, NoteEntry>();
 ```
 
-2.  Add a `using` statement for the **System.Linq** namespace to the top of the file. We'll need some of the extension methods that are part of that namespace.
+2.  Add `using` statements for the **System.Linq** and **System.Threading.Tasks** namespaces to the top of the file. We'll need some of the extension methods and classes that are part of those namespaces.
 
 ```csharp
 using System.Linq;
+using System.Threading.Tasks;
 ```
 
 3. Implement the **GetAllAsync** method by returning all the objects in the dictionary's `Values` property. Use `ToList()` to turn the value collection into an enumerable collection.
@@ -358,8 +365,8 @@ using System.Linq;
 ```csharp
 public Task<IEnumerable<NoteEntry>> GetAllAsync()
 {
-	IEnumerable<NoteEntry> result = entries.Values.ToList();
-	return Task.FromResult(result);
+    IEnumerable<NoteEntry> result = entries.Values.ToList();
+    return Task.FromResult(result);
 }
 ```
 
@@ -384,7 +391,7 @@ public Task<NoteEntry> GetByIdAsync(string id)
 {
     NoteEntry entry = null;
     entries.TryGetValue(id, out entry);
-    return Task.FromResult<NoteEntry>(entry);
+    return Task.FromResult(entry);
 }
 ```
 
@@ -392,7 +399,7 @@ public Task<NoteEntry> GetByIdAsync(string id)
 
 ### Create sample data
 
-1.  Add a new class to the **Minutes** shared-code project named **MockDataExtensionMethods**.
+1.  Add a new class to the **Data** folder in the  **Minutes** shared-code project named **MockDataExtensionMethods**.
 
 2.  Add `public` and `static` to the class definition.
 
@@ -407,19 +414,19 @@ namespace Minutes.Data
     {
         public static void LoadMockData(this INoteEntryStore store)
         {
-            var a = new NoteEntry
+            NoteEntry a = new NoteEntry
             {
                 Title = "Sprint Planning Meeting",
                 Text = "1. Scope 2. Backlog 3. Duration"
             };
 
-            var b = new NoteEntry
+            NoteEntry b = new NoteEntry
             {
                 Title = "Daily Scrum Stand-up",
                 Text = "1. Yesterday 2. Today 3. Impediments"
             };
 
-            var c = new NoteEntry
+            NoteEntry c = new NoteEntry
             {
                 Title = "Sprint Retrospective",
                 Text = "1. Reflection 2. Actions"
@@ -445,7 +452,7 @@ namespace Minutes.Data
 public static INoteEntryStore Entries { get; set; }
 ```
 
-3. In the **App** constructor, instantiate a **MemoryEntryStore** object and assign it to the **Entries** property. You will need to add `using Minutes.Data`.
+3. In the **App** constructor, instantiate a **MemoryEntryStore** object and assign it to the **Entries** property. You will need to add `using Minutes.Data;`.
 
 4. In the **App** constructor, invoke the **LoadMockData** extension method on **Entries** to fill it with sample data.
 
@@ -459,15 +466,15 @@ public partial class App : Application
     public static INoteEntryStore Entries { get; set; }
 
     public App ()
-	{
-		InitializeComponent();
+    {
+        InitializeComponent();
 
         Entries = new MemoryEntryStore();
         Entries.LoadMockData();
 
         MainPage = new Minutes.MainPage();
-	}
-	...
+    }
+    ...
 }
 ```
 
@@ -481,7 +488,7 @@ You will display the list of `NoteEntry` objects in a **ListView** using the def
 
 1. Open **MainPage.xaml** in the shared-code project. This is the main page for the application which is setup in **App.xaml.cs** as part of the constructor.
 
-2. Remove the `Label` added by the starter template. When you are finished, the file should like the XAML shown below.
+2. Remove the contents of the `ContentPage` added by the starter template. When you are finished, the file should like the XAML shown below.
 
 ```xml
 <?xml version="1.0" encoding="utf-8" ?>
@@ -519,8 +526,8 @@ You will display the list of `NoteEntry` objects in a **ListView** using the def
 ```csharp
 protected override async void OnAppearing()
 {
-	base.OnAppearing();
-	entries.ItemsSource = await App.Entries.GetAllAsync();
+    base.OnAppearing();
+    entries.ItemsSource = await App.Entries.GetAllAsync();
 }
 ```
 
@@ -552,7 +559,7 @@ Since the `NoteEntry` objects just have text, you can use a built-in template: t
 
 5. Add a `TextCell` inside the `DataTemplate`.
 
-All your subsequent work will be done inside the open tag of the `TextCell` so can usea  self-closing tag for the `TextCell`.
+All your subsequent work will be done inside the open tag of the `TextCell` so can use a self-closing tag for the `TextCell`.
 
 6. Inside the `TextCell` element tag, assign the string "Title" to the `Text` property.
 
@@ -566,14 +573,14 @@ The code is shown below for convenience.
 
 ```xml
 <ListView x:Name="entries">
-	<ListView.ItemTemplate>
-		<DataTemplate>
-			<TextCell
-				Text="Title"
-				Detail="Text"
-				DetailColor="Goldenrod" />
-		</DataTemplate>
-	</ListView.ItemTemplate>
+    <ListView.ItemTemplate>
+        <DataTemplate>
+            <TextCell
+                Text="Title"
+                Detail="Text"
+                DetailColor="Goldenrod" />
+        </DataTemplate>
+    </ListView.ItemTemplate>
 </ListView>>
 ```
 
@@ -595,14 +602,14 @@ The goal is to display the data from each `NoteEntry` object. To do this, the ap
 
 ```xml
 <ListView x:Name="entries">
-	<ListView.ItemTemplate>
-		<DataTemplate>
-			<TextCell
-				Text="{Binding Title}"
-				Detail="{Binding Text}"
-				DetailColor="Goldenrod" />
-		</DataTemplate>
-	</ListView.ItemTemplate>
+    <ListView.ItemTemplate>
+        <DataTemplate>
+        <TextCell
+                Text="{Binding Title}"
+                Detail="{Binding Text}"
+                DetailColor="Goldenrod" />
+        </DataTemplate>
+    </ListView.ItemTemplate>
 </ListView>
 ```
 
@@ -640,20 +647,21 @@ Now, update the code to display the new page when the user taps on one of the it
 ```csharp
 entries.ItemTapped += OnItemTapped;
 ```
+
 3. Add the `OnItemTapped` method; you can auto-generate it with Visual Studio (right-click on the method name with the red-underline and select **Quick Actions and Refactorings...** > **Generate Method**) or type it yourself using a standard event handler signature with an `ItemTappedEventArgs`.
 
-4. Get the item you have tapped on from the passed `ItemTappedEventArgs` - it's in the `Item` property and cast it to a `NoteEntry` object.
+4. Get the item you have tapped on from the passed `ItemTappedEventArgs` - it's in the `Item` property and cast it to a `NoteEntry` object. You will need to add `using Minutes.Data;` either manually, or by right-clicking on the `NoteEntry` and selecting **Quick Actions and Refactorings...** > **Using Minutes.Data**).
 
 5. Call `Navigation.PushAsync` and pass it a new instance of your `NoteEntryEditPage`.
 
 6. That method is async, so apply the `async` and `await` keywords.
 
-6. The page needs to know about the selected `NoteEntry`, an easy way to do this is to pass it into the constructor. Modify the constructor of the `NoteEntryEditPage` to take a `NoteEntry` and cache it into a private field.
+7. The page needs to know about the selected `NoteEntry`, an easy way to do this is to pass it into the constructor. Modify the constructor of the `NoteEntryEditPage` to take a `NoteEntry` and cache it into a private field. You will need to add `using Minutes.Data;` either manually, or by right-clicking on the `NoteEntry` and selecting **Quick Actions and Refactorings...** > **Using Minutes.Data**).
 
 ```csharp
 private async void OnItemTapped(object sender, ItemTappedEventArgs e)
 {
-    var item = e.Item as NoteEntry;
+    NoteEntry item = e.Item as NoteEntry;
     await Navigation.PushAsync(new NoteEntryEditPage(item));
 }
 ```
@@ -663,29 +671,29 @@ private NoteEntry entry;
 
 public NoteEntryEditPage (NoteEntry entry)
 {
-	InitializeComponent ();
+    InitializeComponent ();
     this.entry = entry;
 }
 ```
 
-7. Xamarin.Forms uses a standard paradigm for navigation; you used the method above (`Navigation.PushAsync`). To work on all platforms, you will need to add in a `NavigationPage` into the UI structure. Open the **App.xaml.cs** source file.
+8. Xamarin.Forms uses a standard paradigm for navigation; you used the method above (`Navigation.PushAsync`). To work on all platforms, you will need to add in a `NavigationPage` into the UI structure. Open the **App.xaml.cs** source file.
 
-8. Locate the assignment of the `MainPage` property in the constructor.
+9. Locate the assignment of the `MainPage` property in the constructor.
 
-9. Change the main page to be a `NavigationPage` object and pass in the existing `MainPage` object into the constructor of the new `NavigationPage`.
+10. Change the main page to be a `NavigationPage` object and pass in the existing `MainPage` object into the constructor of the new `NavigationPage`.
 
 ```csharp
 public App ()
 {
-	InitializeComponent();
-	...
+    InitializeComponent();
+    ...
     MainPage = new NavigationPage(new Minutes.MainPage());
 }
 ```
 
-10. Run the app on at least one platform and tap on an entry in the `ListView`. It should navigate to your second page and display "Welcome to Xamarin.Forms!". You can go back using the built-in **Back** button located in the top-left corner.
+11. Run the app on at least one platform and tap on an entry in the `ListView`. It should navigate to your second page and display "Welcome to Xamarin.Forms!". You can go back using the built-in **Back** button located in the top-left corner.
 
-11. You can customize the colors presented along the top of the `NavigationPage`. Let's update the page to use the same Blue as the launch screen. On the `NavigationPage` class:
+12. You can customize the colors presented along the top of the `NavigationPage`. Let's update the page to use the same Blue as the launch screen. On the `NavigationPage` class:
     - Set the `BarBackgroundColor` property to `Color.FromHex("#3498db")`
     - Set the `BarTextColor` property to `Color.White`
 
@@ -717,7 +725,7 @@ Next, let's change the second page UI to display the selected note's details.
              x:Class="Minutes.NoteEntryEditPage">
     <ContentPage.Content>
         <StackLayout>
-            
+
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>
@@ -769,9 +777,9 @@ Next, let's change the second page UI to display the selected note's details.
 8. Assign the passed `NoteEntry` to the built-in `BindingContext` property.
 
 ```csharp
- public NoteEntryEditPage (NoteEntry entry)
+public NoteEntryEditPage (NoteEntry entry)
 {
-	InitializeComponent ();
+    InitializeComponent ();
     BindingContext = this.entry = entry;
 }
 ```
@@ -792,7 +800,7 @@ Next, let's change the second page UI to display the selected note's details.
 protected override async void OnDisappearing()
 {
     base.OnDisappearing();
-    
+
     if (entry != null)
     {
         await App.Entries.UpdateAsync(entry);
@@ -869,23 +877,23 @@ Now that the app can display and update notes, let's add support to **Add** a ne
 2. Surround the `ListView` with a `StackLayout`.
 
 ```xml
-    <StackLayout>
-        <ListView x:Name="entries">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <TextCell
-				        Text="{Binding Title}"
-				        Detail="{Binding Text}"
-				        DetailColor="Goldenrod" />
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
-    </StackLayout>
+<StackLayout>
+    <ListView x:Name="entries">
+        <ListView.ItemTemplate>
+            <DataTemplate>
+                <TextCell
+                    Text="{Binding Title}"
+                    Detail="{Binding Text}"
+                    DetailColor="Goldenrod" />
+            </DataTemplate>
+        </ListView.ItemTemplate>
+    </ListView>
+</StackLayout>
 ```
 
 3. Put an `Entry` element above the `ListView`, set the `x:Name` to "newEntry".
-	- Set the `PlaceHolder` property to "Add a new Entry".
-	- Set the `Margin` property to "0,0,0,20". This adds a 20 unit space below the control to separate it from the `ListView`.
+    - Set the `PlaceHolder` property to "Add a new Entry".
+    - Set the `Margin` property to "0,0,0,20". This adds a 20 unit space below the control to separate it from the `ListView`.
 
 ```xml
 <Entry x:Name="newEntry" Placeholder="Add a new Entry" Margin="0,0,0,20" />
@@ -900,8 +908,8 @@ Now that the app can display and update notes, let's add support to **Add** a ne
 ```csharp
 public MainPage()
 {
-	InitializeComponent();
-	...
+    InitializeComponent();
+    ...
     newEntry.Completed += OnAddNewEntry;
 }
 ```
@@ -919,12 +927,12 @@ public MainPage()
 8. Finally, set the `newEntry.Text` property to an empty string to clear it out _after_ the navigation call - this will clear the UI so that the `Entry` is empty when the app navigates back to this page.
 
 ```csharp
-private async void OnAddEntry(object sender, EventArgs e)
+private async void OnAddNewEntry(object sender, EventArgs e)
 {
     string text = newEntry.Text;
     if (!string.IsNullOrWhiteSpace(text))
     {
-        var item = new NoteEntry { Title = text };
+        NoteEntry item = new NoteEntry { Title = text };
         await App.Entries.AddAsync(item);
         await Navigation.PushAsync(new NoteEntryEditPage(item));
         newEntry.Text = string.Empty;
@@ -952,8 +960,7 @@ The final missing feature is support to _delete_ a note. You will do this by add
 
 ```xml
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
-	...>
-             
+    ...>
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Delete" Icon="delete.png" Clicked="OnDeleteEntry" />
     </ContentPage.ToolbarItems>
@@ -966,10 +973,10 @@ The final missing feature is support to _delete_ a note. You will do this by add
 3. Open **NoteEntryEditPage.xaml.cs** and add an event handler method named **OnDeleteEntry** to handle the button click.
 
 4. In the event handler, ask the user whether they _really_ want to delete the note. You can use the built-in `DisplayAlert` method which is part of the `ContentPage` base class. It takes a minimum of three parameters:
-	- **Title** - set this to `"Delete Entry?"`
-	- **Description** - set this to `$"Are you sure you want to delete the entry {Title}?"`
-	- **OK Button Text** - set this to `"Yes"`
-	- **Cancel Button Text** - set this to `"No"`
+    - **Title** - set this to `"Delete Entry?"`
+    - **Description** - set this to `$"Are you sure you want to delete the entry {Title}?"`
+    - **OK Button Text** - set this to `"Yes"`
+    - **Cancel Button Text** - set this to `"No"`
 
 5. `DisplayAlert` is asynchronous and returns a true/false depending on which choice  the user makes. Use `await` to get the value.
 
@@ -1039,7 +1046,7 @@ There are three folders in the [assets folder](https://github.com/XamarinUnivers
 
 3. Tap the trash can icon in the top right corner. You should see your prompt.
 
-![Delete an Entry in UWP](media/icon29.png)
+![Delete an Entry in UWP](media/image29.png)
 
 4. Selecting "Yes" should delete the entry and return you to the main page and the will be gone; selecting "No" should stay on the details screen.
 
@@ -1067,7 +1074,7 @@ This requires that you implement a new `INoteEntryStore` implementation to save 
 
 4. Add a field of type `string` to hold the filename.
 
-5. Add a public, default (no-argument) constructor to the class and set the filename field using the following code:
+5. Add a public, default (no-argument) constructor to the class and set the filename field using the following code and adding the appropriate `using` directive:
 
 ```csharp
 this.filename = Path.Combine(Environment.GetFolderPath(
@@ -1082,22 +1089,22 @@ this.filename = Path.Combine(Environment.GetFolderPath(
 1. Add a static method named `ReadDataAsync` to `FileEntryStore` that takes a `string` filename and returns a `Task<IEnumerable<NoteEntry>>`. Since it will load from a file, it's more efficient to use the async file I/O features of .NET; add the `async` keyword to the method signature.
 
 ```csharp
-static async Task<IEnumerable<NoteEntry>> ReadDataAsync(string filename)
+private static async Task<IEnumerable<NoteEntry>> ReadDataAsync(string filename)
 {
 }
 ```
 
-2. First check if the file exists using the `File.Exists` API, and if not, return `Enumerable.Empty<NoteEntry>()`.
+2. First check if the file exists using the `File.Exists` API, and if not, return `Enumerable.Empty<NoteEntry>()`. You will need to add a `using` directive for the **System.Linq** namespace.
 
 3. If the file _does_ exist, use a `StreamReader` to load the file; use the `ReadToEndAsync` method and apply the `await` keyword.
 
 4. Next, check the returned string and make sure it has data; if not, return `Enumerable.Empty<NoteEntry>()`.
 
-5. Finally, use the following code to parse the XML text with the `XDocument` class to turn XML into an object graph:
+5. Finally, use the following code to parse the XML text with the `XDocument` class (from the **System.Xml.Linq** namespace, so you will need to add a `using` directive) to turn XML into an object graph:
 
 ```csharp
-IEnumerable<NoteEntry> result = 
-	XDocument.Parse(text)
+IEnumerable<NoteEntry> result =
+    XDocument.Parse(text)
         .Root
         .Elements("entry")
         .Select(e =>
@@ -1114,7 +1121,7 @@ IEnumerable<NoteEntry> result =
 The final code for the method is shown below:
 
 ```csharp
-static async Task<IEnumerable<NoteEntry>> ReadDataAsync(string filename)
+private static async Task<IEnumerable<NoteEntry>> ReadDataAsync(string filename)
 {
     if (!File.Exists(filename))
     {
@@ -1122,7 +1129,7 @@ static async Task<IEnumerable<NoteEntry>> ReadDataAsync(string filename)
     }
 
     string text;
-    using (var reader = new StreamReader(filename))
+    using (StreamReader reader = new StreamReader(filename))
     {
         text = await reader.ReadToEndAsync().ConfigureAwait(false);
     }
@@ -1168,8 +1175,8 @@ XDocument root = new XDocument(
 The final code is shown below:
 
 ```csharp
-static async Task SaveDataAsync(string filename, 
-	                            IEnumerable<NoteEntry> notes)
+private static async Task SaveDataAsync(string filename,
+                                IEnumerable<NoteEntry> notes)
 {
     XDocument root = new XDocument(
         new XElement("minutes",
