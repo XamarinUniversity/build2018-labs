@@ -24,9 +24,11 @@ namespace Minutes
         protected override void OnAppearing()
         {
             base.OnAppearing();
-            if (Device.RuntimePlatform == Device.macOS
-                || Device.RuntimePlatform == Device.UWP)
-            textEditor.Focus();
+            if (Device.Idiom == TargetIdiom.Desktop
+                || Device.Idiom == TargetIdiom.Tablet)
+            {
+                textEditor.Focus();
+            }
         }
 
         protected override async void OnDisappearing()

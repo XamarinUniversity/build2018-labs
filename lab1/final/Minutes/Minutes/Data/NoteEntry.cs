@@ -17,9 +17,6 @@ namespace Minutes.Data
             Id = Guid.NewGuid().ToString();
         }
 
-        public override string ToString()
-        {
-            return $"{Title} {CreatedDate}";
-        }
+        public override string ToString() => $"{Title} {CreatedDate}";
     }
 }

@@ -289,6 +289,16 @@ public class NoteEntry
 }
 ```
 
+**Note:** For single-line methods like this, you can condense the code by using C#'s expression bodied member syntax. As an example, the below code is exactly the same as above to C#, just shorter! You can use either approach based on what is easier for you to read and understand.
+
+```csharp
+public class NoteEntry
+{
+    ...
+    public override string ToString() => $"{Title} {CreatedDate}";
+}
+```
+
 ## 7. Add a storage interface
 
 Next, you will define an _abstraction_ for the storage class that collects all the notes together. You will start with a basic in-memory implementation so you can build the UI and test out the logic. Later, you can switch to a persistent file so the **NoteEntry** data is saved to the device.
@@ -822,15 +832,19 @@ When the user edits an entry, they will often want to immediately begin typing. 
 
 > On some devices, typically phones, you might _not_ want this behavior since it can cover content on a small screen. You can restrict this to be desktop-only using the `Device.RuntimePlatform` flag.
 
-4. In the `OnAppearing` override, check the `Device.RuntimePlatform` property for either `Device.macOS` or `Device.UWP` and only change focus if it's one of those two platforms.
+4. In the `OnAppearing` override, check the `Device.Idiom` property for either `TargetIdiom.Desktop` or `TargetIdiom.Tablet` and only change focus if it's one of those two platforms.
+
+> **Note**: We could also check the `Device.RuntimePlatform` property for a specific platform such as UWP if we wanted to be more specific.
 
 ```csharp
 protected override void OnAppearing()
 {
     base.OnAppearing();
-    if (Device.RuntimePlatform == Device.macOS
-        || Device.RuntimePlatform == Device.UWP)
-    textEditor.Focus();
+    if (Device.Idiom == TargetIdiom.Desktop
+        || Device.Idiom == TargetIdiom.Tablet)
+    {
+        textEditor.Focus();
+    }
 }
 ```
 
@@ -972,7 +986,7 @@ The final missing feature is support to _delete_ a note. You will do this by add
 
 3. Open **NoteEntryEditPage.xaml.cs** and add an event handler method named **OnDeleteEntry** to handle the button click.
 
-4. In the event handler, ask the user whether they _really_ want to delete the note. You can use the built-in `DisplayAlert` method which is part of the `ContentPage` base class. It takes a minimum of three parameters:
+4. In the event handler, ask the user whether they _really_ want to delete the note. You can use the built-in `DisplayAlert` method which is part of the `ContentPage` base class. It takes a minimum of three parameters, with an optional fourth if you need a cancel button:
     - **Title** - set this to `"Delete Entry?"`
     - **Description** - set this to `$"Are you sure you want to delete the entry {Title}?"`
     - **OK Button Text** - set this to `"Yes"`
@@ -1024,11 +1038,25 @@ There are three folders in the [assets folder](https://github.com/XamarinUnivers
 
 #### iOS
 
-1. In Visual Studio, expand the **Minutes.iOS** project and expand the **Resources** folder in the Solution Explorer. You should see graphical assets here, primarily icons.
+1. In Visual Studio, expand the **Minutes.iOS** project in the Solution Explorer. Locate the **Asset Catalogs** node in the project; right-click on it and select **Add Asset Catalog**.
 
-2. **Drag** the three icons in the **ios** folder from **assets** into the **Resources** folder in Visual Studio.
+![Add Asset Catalog](media/image30.png)
 
-3. Select each one in the Solution Explorer and verify that the **Build Action** is set to **BundleResource**.
+2. In the dialog, make sure **Asset Catalog** is selected, and that the name is **Assets** since this is the first one. Click **Add** to add the item to the project.
+
+![New Asset Catalog](media/image31.png)
+
+3. If the new asset catalog (**Assets**) doesn't open on it's own, double click on it in the project.
+
+4. Click the **(+)** button in the top left corner to add a new asset and select **Add Image Set** from the popup menu.
+
+![New Asset](media/image32.png)
+
+5. **Drag** the three icons in the **ios** folder from **assets** into the new Image Set. You should match the name to the placeholder - for example, **delete@2x.png** should be placed into the box labeled **2x** as shown below:
+
+![Final image set](media/image33.png)
+
+6. Close the asset catalog.
 
 #### UWP
 
