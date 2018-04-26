@@ -17,7 +17,7 @@ The app you will be working with is a community chat application named **My Circ
 
 ## Prerequisites
 
-This lab uses Visual Studio 2017 on Windows with the Xamarin mobile workload installed. It utilizes an existing Xamarin.Forms application with target projects for iOS, Android, Windows (UWP), and macOS. You can also use Visual Studio for Mac to complete this lab, however a few of the steps might not match completely.
+This lab uses Visual Studio 2017 on Windows with the Xamarin, UWP, and Azure workloads installed. It utilizes an existing Xamarin.Forms application with target projects for iOS, Android, Windows (UWP), and macOS. You can also use Visual Studio for Mac to complete this lab, however a few of the steps might not match completely.
 
 > **Note** This lab assumes you are running Visual Studio on Windows 10 Fall Creators Update. If you are using an older version of Windows, you might not be able to run the UWP version of the application. In this case, you can skip those sections and concentrate on either iOS and/or Android.
 
@@ -462,11 +462,11 @@ Now that the app is talking to Azure, let's use another Azure service to give so
 
 You will be using two NuGet based plug-ins for this:
 
-1. [Xam.Plugin.SimpleAudioRecorder](https://www.nuget.org/packages/Xam.Plugin.SimpleAudioRecorder/) to record audio on the device in a cross-platform fashion. This component is open source and you can check out the implementation [here](https://github.com/adrianstevens/Xamarin-Plugins).
+1. [Xam.Plugin.SimpleAudioRecorder](https://www.nuget.org/packages/Xam.Plugin.SimpleAudioRecorder/) to record audio on the device in a cross-platform fashion. The code is open source and you can check out the implementation [here](https://github.com/adrianstevens/Xamarin-Plugins).
 
-2. [Plugin.SpeechToText](https://www.nuget.org/packages/Plugin.SpeechToText/) to call Azure and translate the recorded speech to text using the [Bing Speech API](https://azure.microsoft.com/en-us/services/cognitive-services/speech/). Note that while the Azure service supports multiple languages, this specific component only works for spoken English.
+2. [Plugin.SpeechToText](https://www.nuget.org/packages/Plugin.SpeechToText/) to call Azure and translate the recorded speech to text using the [Bing Speech API](https://azure.microsoft.com/en-us/services/cognitive-services/speech/). Note that while the Azure service supports multiple languages, this specific implementation only works for spoken English.
 
-The lab uses this component for convenience since it's mostly boiler plate code, but it's useful to look at the technique used. 
+The lab uses this NuGet package for convenience since it's mostly boiler plate code, but it's useful to look at the technique used. 
 
 You will need a Bing Speech to Text API key which can be obtained using [these instructions](#get-an-api-key), but once you have that, if you want to just jump adding the speech support to the app, you can [skip directly to that step](#add-recording-support-to-the-ui).
 
@@ -761,7 +761,7 @@ You will need to do two things:
 
 2. Request to use the microphone at runtime. This is an active UI request informing the user that we'd like to record them. For most platforms, the user has to explicitly allow this the first time and they can, in most cases, remove permissions later on through system settings on the device.
 
-Unfortunately, each platform has slightly different requirements. So you need to go through each project to annote the metadata to request permissions to the microphone, and then add a NuGet package to easily _request_ the user's permission at runtime in a cross-platform way.
+Unfortunately, each platform has slightly different requirements. So you need to go through each project to add the metadata to request permissions to the microphone, and then add a NuGet package to easily _request_ the user's permission at runtime in a cross-platform way.
 
 #### Android
 
@@ -794,6 +794,10 @@ Unfortunately, each platform has slightly different requirements. So you need to
 <key>NSMicrophoneUsageDescription</key>
 <string>Record my voice for Speech to Text</string>
 ```
+
+#### macOS
+
+No steps are necessary for macOS since it's a desktop application, it has full access to the microphone without any declarations.
 
 #### UWP
 
