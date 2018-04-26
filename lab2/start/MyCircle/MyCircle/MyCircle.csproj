@@ -19,6 +19,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.NETCore.Platforms" Version="2.0.2" />
     <PackageReference Include="Xamarin.Forms" Version="3.0.0.354232-pre3" />
+    <PackageReference Include="XamarinUniversity.Core" Version="1.1.6" />
     <PackageReference Include="XamarinUniversity.Infrastructure" Version="1.1.7" />
   </ItemGroup>
 
