@@ -12,6 +12,8 @@
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <TargetFrameworkIdentifier>Xamarin.Mac</TargetFrameworkIdentifier>
     <MonoMacResourcePrefix>Resources</MonoMacResourcePrefix>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhoneSimulator' ">
     <DebugSymbols>true</DebugSymbols>
@@ -57,8 +59,13 @@
     </XamMacArch>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.11.0.2\lib\netstandard2.0\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="Xamarin.Mac" />
     <Reference Include="Xamarin.Forms.Core">
       <HintPath>..\..\packages\Xamarin.Forms.3.0.0.354232-pre3\lib\Xamarin.Mac\Xamarin.Forms.Core.dll</HintPath>
@@ -75,7 +82,7 @@
     <Reference Include="XamU.Core">
       <HintPath>..\..\packages\XamarinUniversity.Core.1.1.6\lib\netstandard2.0\XamU.Core.dll</HintPath>
     </Reference>
-    <Reference Include="XamU.Infrastructure, Version=1.1.7.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="XamU.Infrastructure">
       <HintPath>..\..\packages\XamarinUniversity.Infrastructure.1.1.7\lib\netstandard2.0\XamU.Infrastructure.dll</HintPath>
     </Reference>
   </ItemGroup>
@@ -94,9 +101,7 @@
     <ImageAsset Include="Assets.xcassets\Contents.json" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\speech.png" />
-  </ItemGroup>
-  <ItemGroup>
+    <None Include="app.config" />
     <None Include="Info.plist" />
     <None Include="Entitlements.plist" />
     <None Include="packages.config" />
@@ -112,6 +117,7 @@
   <ItemGroup>
     <BundleResource Include="Resources\refresh.png" />
     <BundleResource Include="Resources\logout.png" />
+    <BundleResource Include="Resources\speech.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MyCircle\MyCircle.csproj">
@@ -121,4 +127,11 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
   <Import Project="..\..\packages\Xamarin.Forms.3.0.0.354232-pre3\build\netstandard2.0\Xamarin.Forms.targets" Condition="Exists('..\..\packages\Xamarin.Forms.3.0.0.354232-pre3\build\netstandard2.0\Xamarin.Forms.targets')" />
+  <Import Project="..\..\packages\NETStandard.Library.2.0.0\build\netstandard2.0\NETStandard.Library.targets" Condition="Exists('..\..\packages\NETStandard.Library.2.0.0\build\netstandard2.0\NETStandard.Library.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\packages\NETStandard.Library.2.0.0\build\netstandard2.0\NETStandard.Library.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\NETStandard.Library.2.0.0\build\netstandard2.0\NETStandard.Library.targets'))" />
+  </Target>
 </Project>

@@ -22,6 +22,6 @@
         <ToolbarItem Text="Refresh" Icon="refresh.png" Command="{Binding RefreshData}" />
     </ContentPage.ToolbarItems>
 
-    <local:MessagesView x:Name="Messages" Margin="0,20,0,20" ItemTapped="OnMessageSelected"/>
+    <local:MessagesView x:Name="Messages" Margin="0,20,0,0" ItemTapped="OnMessageSelected"/>
 
 </ContentPage>
