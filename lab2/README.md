@@ -237,7 +237,7 @@ public class CircleMessage : EntityData
 
 3. Select **App Service** from the side-bar, and **Create New** on the right side.
 
-4. Click **Create Profile** to start the service creation. This will load your available subscriptions in Azure. You will need to have an account (a free one is fine) and it will prompt you to create one or to login if you are not currently logged in.
+4. Click **Create Profile** or **Publish** (depending on which version of Visual Studio 2017 you are using) to start the service creation. This will load your available subscriptions in Azure. You will need to have an account (a free one is fine) and it will prompt you to create one or to login if you are not currently logged in.
 
 5. Give the app a name - this will become your URL which the mobile app will need to know.
 
@@ -434,10 +434,10 @@ Here's the correct definition of the `CircleMessage`:
 ```csharp
 public class CircleMessage
 {
-	...
+    ...
     public DateTimeOffset? CreatedAt { get; set; }
 
-	...
+    ...
     public CircleMessage(string parentId = null)
     {
         ThreadId = parentId ?? Guid.NewGuid().ToString();
@@ -514,16 +514,16 @@ You get a token by calling the authentication endpoint, passing the API key as a
 Here's an example of getting the access token given the API key obtained from the Azure portal:
 
 ```csharp
-async Task<string> GetAuthenticationToken(string apiKey)
+private async Task<string> GetAuthenticationToken(string apiKey)
 {
-	HttpClient client = new HttpClient();
-	httpClient.DefaultRequestHeaders.Add(
-		 "Ocp-Apim-Subscription-Key", apiKey);
+    HttpClient client = new HttpClient();
+    httpClient.DefaultRequestHeaders.Add(
+        "Ocp-Apim-Subscription-Key", apiKey);
 
-	var uriBuilder = new UriBuilder("https://api.cognitive.microsoft.com/sts/v1.0/issueToken");
+    var uriBuilder = new UriBuilder("https://api.cognitive.microsoft.com/sts/v1.0/issueToken");
 
     var result = await httpClient.PostAsync(
-    	uriBuilder.Uri.AbsoluteUri, null);
+        uriBuilder.Uri.AbsoluteUri, null);
     return await result.Content.ReadAsStringAsync();
 }
 ```
@@ -552,25 +552,25 @@ public class SpeechToTextResult
 Here's a simple example of calling the REST API to translate a **.wav** file passed in as a `Stream` along with an auth token obtained using the code above.
 
 ```csharp
-async Task<SpeechToTextResult> SendRequestAsync(Stream mediaStream, string authToken)
+private async Task<SpeechToTextResult> SendRequestAsync(Stream mediaStream, string authToken)
 {
-	string url = "https://speech.platform.bing.com/speech/recognition/dictation/cognitiveservices/v1" + 
-		"?language=en-us&format=simple";
+    string url = "https://speech.platform.bing.com/speech/recognition/dictation/cognitiveservices/v1" + 
+        "?language=en-us&format=simple";
 
-	var client = new HttpClient();
-	client.DefaultRequestHeaders.Authorization = 
-	  new AuthenticationHeaderValue("Bearer", authToken);
+    var client = new HttpClient();
+    client.DefaultRequestHeaders.Authorization = 
+    new AuthenticationHeaderValue("Bearer", authToken);
 
-	// Define the media we want to translate.
-	var content = new StreamContent(mediaStream);
-	content.Headers.TryAddWithoutValidation(
-		"Content-Type", 
-		"audio/wav; codec=\audio/pcm\"; samplerate=16000");
+    // Define the media we want to translate.
+    var content = new StreamContent(mediaStream);
+    content.Headers.TryAddWithoutValidation(
+        "Content-Type", 
+        "audio/wav; codec=\audio/pcm\"; samplerate=16000");
 
-	var response = await httpClient.PostAsync(url, content);
-	var jsonText = await response.Content.ReadAsStringAsync();
+    var response = await httpClient.PostAsync(url, content);
+    var jsonText = await response.Content.ReadAsStringAsync();
 
-	return JsonConvert.DeserializeObject<SpeechToTextResult>(jsonText);
+    return JsonConvert.DeserializeObject<SpeechToTextResult>(jsonText);
 }
 ```
 
@@ -586,9 +586,9 @@ You can then get the text from the `DisplayText` property of the returning objec
 
 ```xml
 ...
-	<Grid>
-		<Entry x:Name="messageEntry" ... />
-	</Grid>
+    <Grid>
+        <Entry x:Name="messageEntry" ... />
+    </Grid>
 </StackLayout>
 ```
 
@@ -596,7 +596,7 @@ You can then get the text from the `DisplayText` property of the returning objec
 
 5. Add three columns to the `Grid`:
 	- Star-sized
-	- 10 unites
+	- 10 units
 	- Auto sized
 
 ```xml
@@ -629,7 +629,7 @@ You can then get the text from the `DisplayText` property of the returning objec
 9. At the bottom of the class, locate the `OnTranslateSpeechToText` method and examine it's implementation.
 
 ```csharp
-async void OnTranslateSpeechToText(object sender, EventArgs e)
+private async void OnTranslateSpeechToText(object sender, EventArgs e)
 {
     if (!messageEntry.IsEnabled) return;
 
@@ -722,11 +722,11 @@ public async Task StartRecording()
 ```csharp
 private async Task OnStopRecording()
 {
-	IsTranslating = true;
+    IsTranslating = true;
 
-	// TODO: stop recording
-	var recorderResult = await recorder.StopAsync();
-	...
+    // TODO: stop recording
+    var recorderResult = await recorder.StopAsync();
+    ...
 }
 ```
 
@@ -740,9 +740,9 @@ private async Task OnStopRecording()
 
 ```csharp
 // TODO: submit text to Azure
-SpeechToText speechClient = new SpeechToText(SpeechApiKey);
+var speechClient = new SpeechToText(SpeechApiKey);
 var speechResult = await speechClient.RecognizeSpeechAsync(
-	                            recorderResult.GetFilePath());
+                         recorderResult.GetFilePath());
 ```
 
 7. Pass the `speechResult.DisplayText` property to the **finishedCallback** delegate to close the screen and finish the recording/translation.
@@ -821,8 +821,8 @@ using Plugin.Permissions;
 ...
 
 public override void OnRequestPermissionsResult(
-	   int requestCode, string[] permissions, 
-	   [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
+        int requestCode, string[] permissions, 
+        [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
 {
     base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
     PermissionsImplementation.Current.OnRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -849,6 +849,11 @@ public class MainActivity : ...
 5. Finally, switch back to the **SpeechTranslatorViewModel.cs** file in the **MyCircle** project and add the following method to the class:
 
 ```csharp
+using Plugin.Permissions;
+using Plugin.Permissions.Abstractions;
+
+...
+
 private async Task<bool> RequestAudioPermissions()
 {
     if (Device.RuntimePlatform == Device.macOS)
@@ -882,12 +887,12 @@ private async Task<bool> RequestAudioPermissions()
 ```csharp
 public async Task StartRecording()
 {
-	if (!await RequestAudioPermissions())
-	{
-	    finishedCallback(null);
-	    return;
-	}
-	...
+    if (!await RequestAudioPermissions())
+    {
+        finishedCallback(null);
+        return;
+    }
+    ...
 }
 ```
 
@@ -956,11 +961,11 @@ public sealed class AzureMessageRepository ...
 5. In the method, check whether **messages** has been initialized by checking to see if it's `null`.
 
 ```csharp
-async Task InitializeTableAsync()
+private async Task InitializeTableAsync()
 {
     if (messages == null)
     {
-    	// Need to init
+        // Need to init
     }
 }
 ```
@@ -1022,7 +1027,7 @@ public CircleMessage() : this(null)
 
 public CircleMessage(string parentId)
 {
-	...
+    ...
 }
 ````
 
@@ -1051,7 +1056,7 @@ The first time, this will take some time - as all records are retrieve (in 50 co
 
 
 ```csharp
-async Task PullChangesAsync()
+private async Task PullChangesAsync()
 {
     await messages.PullAsync($"sync_{nameof(CircleMessage)}", 
                              messages.CreateQuery())
@@ -1096,7 +1101,7 @@ public async Task<IEnumerable<CircleMessage>> GetRootsAsync()
 2. Use the `SyncContext` property on the **client** field and call the `PushAsync` method. Since this is a `Task`-based method, use the `await` keyword to properly synchronize to it.
 
 ```csharp
-async Task PushChangesAsync()
+private async Task PushChangesAsync()
 {
     // Push queued changes back to Azure
     await client.SyncContext.PushAsync();
@@ -1120,7 +1125,7 @@ If you try turning off your network access, you will find things break down quic
 5. You can use any timeout you prefer - the lab will use 5 seconds.
 
 ```csharp
-Task<bool> IsOnlineAsync()
+private Task<bool> IsOnlineAsync()
 {
     return CrossConnectivity.Current
         .IsRemoteReachable(client.MobileAppUri, 
@@ -1195,7 +1200,7 @@ public bool Equals(CircleMessage other)
 6. You will need to turn the **localItem** into a JSON object - you can use `JObject.FromObject` to do this.
 
 ```csharp
-Task ResolveConflictAsync(MobileServiceTableOperationError error)
+private Task ResolveConflictAsync(MobileServiceTableOperationError error)
 {
     var serverItem = error.Result.ToObject<CircleMessage>();
     var localItem = error.Item.ToObject<CircleMessage>();
