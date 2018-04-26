@@ -5,11 +5,11 @@
              x:Class="MyCircle.MessagesView" x:Name="theView">
 
     <Grid>
-        <StackLayout>
+        <FlexLayout Direction="Column">
             <ListView ItemsSource="{Binding Messages}" ItemTapped="OnMessageSelected" 
-                      HasUnevenRows="True" SeparatorVisibility="None" CachingStrategy="RecycleElement"
-                      IsPullToRefreshEnabled="True" RefreshCommand="{Binding RefreshData}" 
-                      IsRefreshing="{Binding Messages.IsRefreshing}">
+                HasUnevenRows="True" SeparatorVisibility="None" CachingStrategy="RecycleElement"
+                IsPullToRefreshEnabled="True" RefreshCommand="{Binding RefreshData}" 
+                IsRefreshing="{Binding Messages.IsRefreshing}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
@@ -21,8 +21,8 @@
                                 </Grid.ColumnDefinitions>
 
                                 <Label Grid.Row="0" Grid.Column="0" LineBreakMode="WordWrap"
-                                    Text="{Binding Message.Text}" FontSize="Small" 
-                                    TextColor="{Binding Message.Color}">
+                                        Text="{Binding Message.Text}" FontSize="Small" 
+                                        TextColor="{Binding Message.Color}">
                                     <Label.Triggers>
                                         <DataTrigger TargetType="Label" Binding="{Binding IsCurrentUser}" Value="True">
                                             <Setter Property="HorizontalTextAlignment" Value="End" />
@@ -47,27 +47,27 @@
                                 </StackLayout>
 
                                 <Label Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" VerticalOptions="Center"
-                                    FontFamily="Segoe UI" FontSize="Large" Text="&#x203A;" TextColor="Accent" 
-                                    IsVisible="{Binding Source={x:Reference theView}, Path=ShowDetails}" />
-
+                                        FontFamily="Segoe UI" FontSize="Large" Text="&#x203A;" TextColor="Accent" 
+                                        IsVisible="{Binding Source={x:Reference theView}, Path=ShowDetails}" />
                             </Grid>
                         </ViewCell>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
 
-            <Entry x:Name="messageEntry" Margin="20" Grid.Column="0" Placeholder="Enter Message" 
-                IsEnabled="{Binding Messages.IsRefreshing, Converter={StaticResource NotBooleanConverter}}"
-                Text="{Binding NewMessage, Mode=TwoWay}">
+            <Entry x:Name="messageEntry" Margin="20" Placeholder="Enter Message" FlexLayout.Shrink="0"
+                    IsEnabled="{Binding Messages.IsRefreshing, Converter={StaticResource NotBooleanConverter}}"
+                    Text="{Binding NewMessage, Mode=TwoWay}">
                 <Entry.Behaviors>
                     <inf:EventToCommandBehavior EventName="Completed" Command="{Binding AddMessage}" />
                 </Entry.Behaviors>
             </Entry>
 
-        </StackLayout>
+        </FlexLayout>
 
         <ActivityIndicator IsVisible="{Binding Messages.IsRefreshing}" 
                     BackgroundColor="Transparent" Color="Accent" 
-                    IsRunning="{Binding Messages.IsRefreshing}" />        
+                    IsRunning="{Binding Messages.IsRefreshing}" />
     </Grid>
+
 </ContentView>

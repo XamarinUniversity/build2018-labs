@@ -25,13 +25,14 @@
         </ResourceDictionary>
     </ContentPage.Resources>
     <ContentPage.Content>
-        <StackLayout>
-            <Label Text="Welcome to My Circle!" Margin="0,20,0,0"
+        <FlexLayout Direction="Column" JustifyContent="SpaceBetween">
+            
+            <Label Text="Welcome to My Circle!" FlexLayout.Shrink="0" Margin="0,20,0,0" 
                     FontAttributes="Bold" TextColor="White" FontSize="Large"
-                    VerticalOptions="Start" HorizontalOptions="Center" />
+                    HorizontalTextAlignment="Center" />
 
-            <Entry FontSize="Medium" Text="{Binding UserName, Mode=TwoWay}"
-                Placeholder="My Name" Margin="20" VerticalOptions="Start">
+            <Entry FontSize="Medium" Text="{Binding UserName, Mode=TwoWay}" 
+                   Placeholder="My Name"  FlexLayout.Shrink="0" Margin="20,0">
                 <Entry.PlaceholderColor>
                     <OnPlatform x:TypeArguments="Color">
                         <OnPlatform.Platforms>
@@ -41,9 +42,8 @@
                 </Entry.PlaceholderColor>
             </Entry>
 
-            <ctl:ItemsControl MinimumHeightRequest="65"
-                    HorizontalOptions="Center" VerticalOptions="Center" Margin="20,5"
-                    ItemsSource="{Binding ProfileColors}">
+            <ctl:ItemsControl HorizontalOptions="Center" VerticalOptions="Center" Margin="20" 
+                    ItemsSource="{Binding ProfileColors}" FlexLayout.Basis="50%">
                 <ctl:ItemsControl.ItemsPanel>
                     <layout:WrapLayout RowSpacing="10" ColumnSpacing="10" />
                 </ctl:ItemsControl.ItemsPanel>
@@ -64,17 +64,20 @@
                     </DataTemplate>
                 </ctl:ItemsControl.ItemTemplate>
             </ctl:ItemsControl>
-            
-            <Grid Margin="0,20,0,0" MinimumHeightRequest="65">
-                <Image HorizontalOptions="Center" VerticalOptions="Center"
-                       Source="{inf:ImageResourceExtension Source=MyCircle.Images.mycircle.png}"
-                        WidthRequest="250" HeightRequest="250" />
-                <Label FontSize="Medium" Text="Enter Your Circle" TextColor="White"
-                       HorizontalOptions="Center" VerticalOptions="Center" Margin="0,200,0,0" />
-                <Grid.GestureRecognizers>
+
+            <Frame Padding="10" BackgroundColor="#50000000" FlexLayout.Shrink="0"
+                   VerticalOptions="End" HorizontalOptions="Fill">
+                <StackLayout>
+                    <Label Text="Enter Your Circle" HorizontalTextAlignment="Center"
+                       VerticalTextAlignment="Center"
+                       TextColor="White" FontSize="Medium" />
+                    <Image Source="{inf:ImageResource Source=MyCircle.Images.mycircle.png}" />
+                </StackLayout>
+                <Frame.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding Login}" />
-                </Grid.GestureRecognizers>
-            </Grid>
-        </StackLayout>
+                </Frame.GestureRecognizers>
+            </Frame>
+
+        </FlexLayout>
     </ContentPage.Content>
 </ContentPage>

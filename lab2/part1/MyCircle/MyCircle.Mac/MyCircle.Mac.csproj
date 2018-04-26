@@ -104,9 +104,6 @@
     <ImageAsset Include="Assets.xcassets\Contents.json" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\speech.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="app.config" />
     <None Include="Info.plist" />
     <None Include="Entitlements.plist" />
@@ -123,6 +120,7 @@
   <ItemGroup>
     <BundleResource Include="Resources\refresh.png" />
     <BundleResource Include="Resources\logout.png" />
+    <BundleResource Include="Resources\speech.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MyCircle\MyCircle.csproj">
