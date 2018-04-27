@@ -108,8 +108,16 @@
     <None Include="MyCircle.UWP_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="speech.png" />
-    <Content Include="logout.png" />
+    <Content Include="logout.scale-125.png" />
+    <Content Include="logout.scale-150.png" />
+    <Content Include="logout.scale-200.png" />
+    <Content Include="logout.scale-400.png" />
+    <Content Include="refresh.scale-125.png" />
+    <Content Include="refresh.scale-150.png" />
+    <Content Include="refresh.scale-200.png" />
+    <Content Include="refresh.scale-400.png" />
+    <Content Include="speech.scale-100.png" />
+    <Content Include="logout.scale-100.png" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-100.png" />
     <Content Include="Assets\LockScreenLogo.scale-125.png" />
@@ -142,7 +150,7 @@
     <Content Include="Assets\Wide310x150Logo.scale-150.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
     <Content Include="Assets\Wide310x150Logo.scale-400.png" />
-    <Content Include="refresh.png" />
+    <Content Include="refresh.scale-100.png" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">

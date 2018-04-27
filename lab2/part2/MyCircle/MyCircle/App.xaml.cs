@@ -14,7 +14,7 @@ namespace MyCircle
             MainPage = new NavigationPage(new MainPage())
             {
                 BarBackgroundColor = Color.Accent,
-                BarTextColor = Color.Default
+                BarTextColor = Device.RuntimePlatform == Device.iOS ? Color.White : Color.Default
             };
         }
 

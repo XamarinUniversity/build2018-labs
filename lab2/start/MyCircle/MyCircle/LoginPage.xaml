@@ -31,8 +31,15 @@
                     FontAttributes="Bold" TextColor="White" FontSize="Large"
                     HorizontalTextAlignment="Center" />
 
-            <Entry FontSize="Medium" Text="{Binding UserName, Mode=TwoWay}" 
+            <Entry FontSize="Medium" Text="{Binding UserName, Mode=TwoWay}"
                    Placeholder="My Name"  FlexLayout.Shrink="0" Margin="20,0">
+                <Entry.TextColor>
+                    <OnPlatform x:TypeArguments="Color">
+                        <OnPlatform.Platforms>
+                            <On Platform="Android" Value="White" />
+                        </OnPlatform.Platforms>
+                    </OnPlatform>
+                </Entry.TextColor>
                 <Entry.PlaceholderColor>
                     <OnPlatform x:TypeArguments="Color">
                         <OnPlatform.Platforms>
@@ -66,7 +73,7 @@
             </ctl:ItemsControl>
 
             <Frame Padding="10" BackgroundColor="#50000000" FlexLayout.Shrink="0"
-                   VerticalOptions="End" HorizontalOptions="Fill">
+                   VerticalOptions="End" HorizontalOptions="Fill" OutlineColor="#50000000">
                 <StackLayout>
                     <Label Text="Enter Your Circle" HorizontalTextAlignment="Center"
                        VerticalTextAlignment="Center"
