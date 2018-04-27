@@ -7,28 +7,19 @@
              ios:Page.UseSafeArea="true"
              Title="{Binding Parent.Message.Text}">
 
-    <ContentPage.BackgroundColor>
-        <OnPlatform x:TypeArguments="Color">
-            <OnPlatform.Platforms>
-                <On Platform="iOS" Value="AliceBlue" />
-                <On Platform="macOS" Value="AliceBlue" />
-            </OnPlatform.Platforms>
-        </OnPlatform>
-    </ContentPage.BackgroundColor>
-    
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Refresh" Icon="refresh.png" Command="{Binding RefreshData}" />
     </ContentPage.ToolbarItems>
     
-    <StackLayout>
-        <Frame OutlineColor="LightGray" CornerRadius="0" Margin="5">
+    <FlexLayout Direction="Column">
+        <Frame OutlineColor="LightGray" CornerRadius="0" Margin="5" FlexLayout.Shrink="0">
             <StackLayout Margin="10">
-                <Label Text="{Binding Parent.Author, StringFormat='On {0} wrote:'}" TextColor="Gray" FontSize="Small" />
+                <Label Text="{Binding Parent.Author, StringFormat='On {0} wrote:'}" FontSize="Small" />
                 <Label Text="{Binding Parent.Message.Text}" TextColor="{Binding Parent.Message.Color}" FontSize="Small" />
             </StackLayout>
         </Frame>
 
-        <local:MessagesView x:Name="Messages" Margin="0,15,0,0" />
+        <local:MessagesView x:Name="Messages" />
 
-    </StackLayout>
+    </FlexLayout>
 </ContentPage>

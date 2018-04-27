@@ -5,8 +5,7 @@ namespace MyCircle
 {
     public partial class App : Application
     {
-        public static IAsyncMessageRepository Repository = new AzureMessageRepository();
-            //new InMemoryMessageRepository();
+        public static IAsyncMessageRepository Repository = new InMemoryMessageRepository();
 
         public App ()
         {
@@ -14,7 +13,7 @@ namespace MyCircle
             MainPage = new NavigationPage(new MainPage())
             {
                 BarBackgroundColor = Color.Accent,
-                BarTextColor = Color.Default
+                BarTextColor = Device.RuntimePlatform == Device.iOS ? Color.White : Color.Default
             };
         }
 
