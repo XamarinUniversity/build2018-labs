@@ -32,7 +32,7 @@ namespace MyCircle.Services
 
             return Task.FromResult(items
                 .Where(n => n.IsRoot)
-                .OrderByDescending(n => n.CreatedDate)
+                .OrderByDescending(n => n.CreatedAt)
                 .AsEnumerable());
         }
 
@@ -40,7 +40,7 @@ namespace MyCircle.Services
         {
             return Task.FromResult(items
                 .Where(n => n.ThreadId == id)
-                .OrderBy(n => n.CreatedDate)
+                .OrderBy(n => n.CreatedAt)
                 .AsEnumerable());
         }
 
