@@ -45,9 +45,8 @@ namespace MyCircle
 
         public void OnAppearing()
         {
-            if (Device.RuntimePlatform == Device.UWP
-                    || Device.RuntimePlatform == Device.WPF
-                    || Device.RuntimePlatform == Device.macOS)
+            if (Device.Idiom == TargetIdiom.Desktop 
+                || Device.Idiom == TargetIdiom.Tablet)
             {
                 // On desktop apps, shift focus to the entry.
                 // Don't do this on mobile devices as onscreen keyboard obscures data.
@@ -60,21 +59,5 @@ namespace MyCircle
         {
             tapHandler?.Invoke(sender, e);
         }
-
-        async void OnTranslateSpeechToText(object sender, EventArgs e)
-        {
-            if (!messageEntry.IsEnabled) return;
-
-            var vm = new SpeechTranslatorViewModel(async s => {
-                if (!string.IsNullOrWhiteSpace(s))
-                {
-                    messageEntry.Text = s;
-                }
-                await Navigation.PopModalAsync();
-            });
-
-            await Navigation.PushModalAsync(new SpeechTranslatorPage() { BindingContext = vm });
-            await vm.StartRecording().ConfigureAwait(false);
-        }        
     }
 }

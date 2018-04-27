@@ -5,7 +5,8 @@ namespace MyCircle
 {
     public partial class App : Application
     {
-        public static IAsyncMessageRepository Repository = new InMemoryMessageRepository();
+        public static IAsyncMessageRepository Repository = new AzureMessageRepository();
+            //new InMemoryMessageRepository();
 
         public App ()
         {

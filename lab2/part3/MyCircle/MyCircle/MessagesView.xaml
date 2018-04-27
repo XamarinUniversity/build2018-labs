@@ -71,7 +71,7 @@
                 <ColumnDefinition Width="10" />
             </Grid.ColumnDefinitions>
                 
-            <Entry x:Name="messageEntry" Margin="20" Placeholder="Enter Message" TextColor="White"
+            <Entry x:Name="messageEntry" Margin="20" Placeholder="Enter Message"
                 IsEnabled="{Binding Messages.IsRefreshing, Converter={StaticResource NotBooleanConverter}}"
                 Text="{Binding NewMessage, Mode=TwoWay}">
                 <Entry.Behaviors>

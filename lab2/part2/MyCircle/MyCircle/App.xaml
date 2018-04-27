@@ -8,6 +8,8 @@
         <ResourceDictionary>
             <cvt:NotBooleanConverter x:Key="NotBooleanConverter" />
             <Color x:Key="BlueColor">#FF1E86EA</Color>
+            <cvt:IntegerToBooleanConverter x:Key="GreaterThanOneConverter"  One="False" />
+            <cvt:IntegerToBooleanConverter x:Key="IsOneConverter"  Positive="False" />
         </ResourceDictionary>
 
 	</Application.Resources>

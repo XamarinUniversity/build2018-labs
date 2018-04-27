@@ -13,6 +13,6 @@
         <ToolbarItem Text="Refresh" Icon="refresh.png" Command="{Binding RefreshData}" />
     </ContentPage.ToolbarItems>
 
-    <local:MessagesView x:Name="Messages" ItemTapped="OnMessageSelected" VerticalOptions="Fill" />
+    <local:MessagesView x:Name="Messages" ItemTapped="OnMessageSelected" />
 
 </ContentPage>

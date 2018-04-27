@@ -10,6 +10,7 @@ namespace MyCircle.Services
 {
     sealed class InMemoryMessageRepository : IAsyncMessageRepository
     {
+        const string SystemColor = "Black";
         Random rnd = new Random();
         List<CircleMessage> items = new List<CircleMessage>();
 
@@ -20,7 +21,7 @@ namespace MyCircle.Services
                 IsRoot = true,
                 Author = "System",
                 Text = "Welcome to Your Circle!",
-                Color = "Orange"
+                Color = SystemColor
             });
         }
 
@@ -73,7 +74,7 @@ namespace MyCircle.Services
                 var message = new CircleMessage(parent)
                 {
                     Author = "System",
-                    Color = "Orange",
+                    Color = SystemColor,
                     IsRoot = (parent == null),
                     Text = String.Join(" ", Enumerable.Range(0, rnd.Next(20)).Select(_ => GetWord(rnd.Next(10))))
                 };
