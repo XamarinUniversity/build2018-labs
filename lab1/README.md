@@ -2,7 +2,7 @@
 
 ## Estimated completion time: 60-75 minutes
 
-In this lab, you will go through creating a new cross-platform mobile application using the Xamarin tools for Visual Studio and Xamarin.Forms.
+In this lab, you will create a new cross-platform mobile application using the Xamarin tools for Visual Studio and Xamarin.Forms.
 
 The app you will build is called **Minutes**; a tracking application which can be used to take notes during meetings, keep track of things assigned to you, or log your own personal thoughts.
 
@@ -19,7 +19,7 @@ The app you will build is called **Minutes**; a tracking application which can b
 7. [Add a storage interface](#7-add-a-storage-interface)
 8. [Code the MemoryEntryStore class](#8-code-the-memoryentrystore-class)
 9. [Build the list of notes in XAML](#9-build-the-list-of-notes-in-xaml)
-10. [Use a better visualization for the notes](#10-use-a-better-visualization-for-the-notes)
+10. [Improve the visualization for the notes](#10-use-a-better-visualization-for-the-notes)
 11. [Add the edit screen](#11-add-the-edit-screen)
 12. [Create a new note](#12-create-a-new-note)
 13. [Delete a note](#13-delete-a-note)
@@ -28,9 +28,9 @@ The app you will build is called **Minutes**; a tracking application which can b
 
 ## Prerequisites
 
-This lab uses Visual Studio on Windows with the Xamarin mobile workload installed. It demonstrates projects for Windows, Android, and iOS. You can also use Visual Studio for Mac; however, this will only create projects targeting Android and iOS and a few of the steps might not match completely.
+This lab uses Visual Studio on Windows with the Xamarin mobile workload installed. It demonstrates projects for Windows, Android, and iOS. You can also use Visual Studio for Mac; however, this will only create projects targeting Android and iOS and a few of the steps might not match exactly.
 
-> **Note** This lab assumes you are running Visual Studio 2017 on Windows 10 Fall Creators Update. If you are using an older version of Windows, you might be unable to run the UWP version of the application. In this case, you can skip those sections and deploy on either iOS and/or Android.
+> **Note** This lab assumes you are running Visual Studio 2017 on Windows 10 Fall Creators Update. If you are using an older version of Windows, you may not be able to run the UWP version of the application. In this case, you can skip those sections and deploy on iOS and/or Android.
 
 ## What you will learn
 You will create a new Xamarin.Forms application and see how to construct a basic UI using XAML, connect the UI to behavior in C# code, and navigate between multiple screens, sharing the data between them.
@@ -82,7 +82,7 @@ The wizard will create four projects: one for the shared code (as a .NET Standar
 | **Minutes** | The .NET Standard shared code project. This is shared between all the target platforms and is  where most of your code will go. |
 | **Minutes.Android** | The Xamarin.Android project which generates the Android-specific binary package which can be deployed and run on Android devices. |
 | **Minutes.iOS** | The Xamarin.iOS project which generated the iOS-specific binary package which can be run on iPhone and iPad devices. |
-| **Minutes.UWP** | The Universal Windows project which can be run on Windows 10 devices. This project is only available when you create the solution with Visual Studio for Windows. |
+| **Minutes.UWP** | The Universal Windows project which can be run on Windows 10 devices. This project is only available when you create the solution with Visual Studio on Windows. |
 
 ## 3. Run on Windows
 
@@ -138,7 +138,7 @@ Execute the **Minutes.Android** app on an Android device or emulator. The instru
 
 ![Select an Android emulator](media/image8.png)
 
-If you don't see any Android devices, you might need to do some setup to get them to display.
+If you don't see any Android devices, you might need to do additional setup:
 
 - [Set up the Android emulators in Visual Studio](https://docs.microsoft.com/en-us/xamarin/android/get-started/installation/android-emulator/)
 
@@ -301,7 +301,7 @@ public class NoteEntry
 
 ## 7. Add a storage interface
 
-Next, you will define an _abstraction_ for the storage class that collects all the notes together. You will start with a basic in-memory implementation so you can build the UI and test out the logic. Later, you can switch to a persistent file so the **NoteEntry** data is saved to the device.
+Next, you will define an _abstraction_ for the storage class that collects all the notes together. You will start with a basic in-memory implementation so you can build the UI and test the logic. Later, you can switch to a persistent file so the **NoteEntry** data is saved to the device.
 
 ### Add a new interface
 
@@ -331,15 +331,15 @@ namespace Minutes
 
 | Method          | Purpose |
 |-----------------|---------|
-| `GetByIdAsync`  | Returns a specific note entry by looking it up through the unique `Id` property. |
+| `GetByIdAsync`  | Returns a specific note entry by looking it up via the unique `Id` property. |
 | `GetAllAsync`   | Returns all the note entry objects as an `Enumerable` list. |
 | `AddAsync`      | Adds a new entry to the collection. |
 | `UpdateAsync`   | Update an existing entry in the collection. |
-| `DeleteAsync`   | Deletes an existing entry in the collection. |
+| `DeleteAsync`   | Delete an existing entry in the collection. |
 
 ## 8. Code the MemoryEntryStore class
 
-Now, you will code the **MemoryEntryStore** class, which will store a collection of **Entry** objects in memory. This will implement the `INoteEntryStore` interface.
+Now, you will code the **MemoryEntryStore** class, which will store a collection of **NoteEntry** objects in memory. This will implement the `INoteEntryStore` interface.
 
 ### Create the class
 
@@ -355,7 +355,7 @@ public class MemoryEntryStore : INoteEntryStore
 
 ### Implement the methods
 
-1.  Add a private, readonly dictionary field of type `Dictionary<string,Entry>` to the class. Name it **entries**.
+1.  Add a private, readonly dictionary field of type `Dictionary<string, NoteEntry>` to the class. Name it **entries**.
 
 ```csharp
 private readonly Dictionary<string, NoteEntry> entries = new Dictionary<string, NoteEntry>();
@@ -551,7 +551,7 @@ Next, you will customize the display of `NoteEntry` objects in the `ListView`. C
 
 You'll change this by using a `DataTemplate` to direct the `ListView` on the proper visualization to use for each item.
 
-There are two options available to us: First, (and best if it works for your app), is to use a built-in template. These are optimized and often correspond directly to a platform's native representation. This approach allows for one or two text items and an optional image.
+There are two options available to us: First, (and best if it works for your app), is to use a built-in template; these are optimized and often correspond directly to a platform's native representation. This approach allows for one or two text items and an optional image.
 
 If your app has requirements for displaying each item that cannot be fulfilled with these templates, you can define a [fully custom view](https://docs.microsoft.com/en-us/xamarin/xamarin-forms/app-fundamentals/custom-renderer/viewcell).
 
@@ -703,9 +703,9 @@ public App ()
 
 11. Run the app on at least one platform and tap on an entry in the `ListView`. It should navigate to your second page and display "Welcome to Xamarin.Forms!". You can go back using the built-in **Back** button located in the top-left corner.
 
-12. You can customize the colors presented along the top of the `NavigationPage`. Let's update the page to use the same Blue as the launch screen. On the `NavigationPage` class:
-    - Set the `BarBackgroundColor` property to `Color.FromHex("#3498db")`
-    - Set the `BarTextColor` property to `Color.White`
+12. You can customize the colors presented along the top of the `NavigationPage`. Let's update the page to use the same Blue as the launch screen. Open **App.cs** and on the `NavigationPage` class:
+    - Set the static `BarBackgroundColor` property to `Color.FromHex("#3498db")`
+    - Set the static `BarTextColor` property to `Color.White`
 
 ```csharp
 MainPage = new NavigationPage(new Minutes.MainPage())
@@ -818,7 +818,7 @@ protected override async void OnDisappearing()
 }
 ```
 
-14. Run the app again and set a breakpoint to see the behavior; the runtime behavior won't change, but we've corrected the oversight now.
+14. Run the app again and set a breakpoint to see the behavior; the runtime behavior won't change, but we've corrected the oversight.
 
 ### Setting focus
 
@@ -934,7 +934,7 @@ public MainPage()
 
 5. If the string is _not_ empty, create a new `NoteEntry` object and use the text as the `Title`.
 
-6. Add the new note to the note entry store (`App.Entries.AddAsync`). Make sure to use the `await` keyword (which means you'll need to add an `async` keyword to the method!)
+6. Add the new note to the note entry store (`App.Entries.AddAsync`). Make sure to use the `await` keyword (which means you'll need to add an `async` keyword to the method!).
 
 7. Copy the code you used in `OnItemTapped` to navigate to the `NoteEntryEditPage` screen, passing it your new item. Make sure to use `await`.
 
