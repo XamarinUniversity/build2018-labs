@@ -592,19 +592,19 @@ You can then get the text from the `DisplayText` property of the returning objec
 </StackLayout>
 ```
 
-4. Move the `Margin` property off the `Entry` and add it to the new `Grid`.
+4. Move the `FlexLayout.Shrink` property off the `Entry` and add it to the new `Grid`.
 
 5. Add three columns to the `Grid`:
-	- Star-sized
-	- 10 units
+	- Star-sized (the default)
 	- Auto sized
+	- 10 units
 
 ```xml
 <Grid Margin="20">
     <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="*" />
-        <ColumnDefinition Width="10" />
+        <ColumnDefinition />
         <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="10" />
     </Grid.ColumnDefinitions>
     ...
 </Grid>
@@ -612,21 +612,51 @@ You can then get the text from the `DisplayText` property of the returning objec
 
 6. Add an `Image` after the `Entry` (inside the `Grid`).
 	- Set the `Source` property to "speech.png". This icon is already present in the platform-specific projects.
-	- Set the `Grid.Column` property to "2".
+	- Set the `Grid.Column` property to "1".
 
 7. Add a `TapGestureRecognizer` to the `Image` in it's `GestureRecognizers` collection. Set the `Tapped` event to "OnTranslateSpeechToText". This method already exists, the lab will look at it next.
 
 ```xml
-<Image Source="speech.png" Grid.Column="2">
+<Image Source="speech.png" Grid.Column="1">
     <Image.GestureRecognizers>
         <TapGestureRecognizer Tapped="OnTranslateSpeechToText" />
     </Image.GestureRecognizers>
 </Image>
 ```
 
-8. Open the **MessagesView.xaml.cs** C# file.
+8. To make it more visually striking, set the `BackgroundColor` for the `Grid` to be **"Accent"** and set the `Padding` to **"5"**.
 
-9. At the bottom of the class, locate the `OnTranslateSpeechToText` method and examine it's implementation.
+```xml
+<Grid FlexLayout.Shrink="0" BackgroundColor="Accent" Padding="5">
+...
+```
+
+9. Next, since the background will now be a color, add the following elements to the `Entry` - this will change the Text Color on Android to be White since it doesn't render a background like the other platforms do. You can copy this code from the **LoginPage.xaml** `Entry` control if you want, or grab it below - you want the setter for `Entry.TextColor` and `Entry.PlaceholderColor`.
+
+```xml
+<Entry ...>
+    <Entry.TextColor>
+        <OnPlatform x:TypeArguments="Color">
+            <OnPlatform.Platforms>
+                <On Platform="Android" Value="White" />
+            </OnPlatform.Platforms>
+        </OnPlatform>
+    </Entry.TextColor>
+    <Entry.PlaceholderColor>
+        <OnPlatform x:TypeArguments="Color">
+            <OnPlatform.Platforms>
+                <On Platform="Android" Value="White" />
+            </OnPlatform.Platforms>
+        </OnPlatform>
+    </Entry.PlaceholderColor>
+</Entry>
+```
+
+### Add recording behavior to the UI
+
+1. Open the **MessagesView.xaml.cs** C# file.
+
+2. At the bottom of the class, locate the `OnTranslateSpeechToText` method and examine it's implementation.
 
 ```csharp
 private async void OnTranslateSpeechToText(object sender, EventArgs e)
