@@ -596,14 +596,14 @@ You can then get the text from the `DisplayText` property of the returning objec
 
 5. Add three columns to the `Grid`:
 	- Star-sized (the default)
-	- Auto sized
+	- 48 units
 	- 10 units
 
 ```xml
 <Grid Margin="20">
     <Grid.ColumnDefinitions>
         <ColumnDefinition />
-        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="48" />
         <ColumnDefinition Width="10" />
     </Grid.ColumnDefinitions>
     ...
@@ -613,11 +613,13 @@ You can then get the text from the `DisplayText` property of the returning objec
 6. Add an `Image` after the `Entry` (inside the `Grid`).
 	- Set the `Source` property to "speech.png". This icon is already present in the platform-specific projects.
 	- Set the `Grid.Column` property to "1".
+    - Set the `VerticalOptions` property to "Center".
+    - Set the `Aspect` property to "AspectFit".
 
 7. Add a `TapGestureRecognizer` to the `Image` in it's `GestureRecognizers` collection. Set the `Tapped` event to "OnTranslateSpeechToText". This method already exists, the lab will look at it next.
 
 ```xml
-<Image Source="speech.png" Grid.Column="1">
+<Image Source="speech.png" Grid.Column="1" VerticalOptions="Center" Aspect="AspectFit">
     <Image.GestureRecognizers>
         <TapGestureRecognizer Tapped="OnTranslateSpeechToText" />
     </Image.GestureRecognizers>
@@ -965,6 +967,21 @@ This package also includes a dependency against SQLite which is supported by all
 5. Add a checkmark next to the **Visual C++ 2015 Runtime for Universal Windows** entry.
 
 ![UWP VC++ runtime](media/image14.png)
+
+### Add the SQLite initialization code for macOS
+
+macOS requires a method call _before_ you can use SQLite.
+
+1. Open **Main.cs** and locate the `Main` method.
+2. At the start of the method, add the following line of code to initialize SQLite.
+
+```
+static void Main(string[] args)
+{
+    SQLitePCL.Batteries_V2.Init();
+    ...
+}
+```
 
 ### Initialize the offline cache
 
