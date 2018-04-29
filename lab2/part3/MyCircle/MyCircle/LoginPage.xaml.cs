@@ -17,5 +17,11 @@ namespace MyCircle
 			base.OnAppearing();
 			BindingContext = new LoginViewModel(Resources["ProfileColors"] as ProfileColorViewModel[]);
 		}
-	}
+
+        protected override bool OnBackButtonPressed()
+        {
+            // Do not allow back button to stop login.
+            return true;
+        }
+    }
 }
