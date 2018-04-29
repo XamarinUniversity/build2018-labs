@@ -13,8 +13,9 @@ namespace MyCircle.Mac
         {
             var style = NSWindowStyle.Closable | NSWindowStyle.Resizable | NSWindowStyle.Titled;
 
-            var rect = new CoreGraphics.CGRect(200, 1000, 1024, 768);
+            var rect = new CoreGraphics.CGRect(200, 1000, 600, 600);
             _window = new NSWindow(rect, style, NSBackingStore.Buffered, false);
+            _window.MinSize = new CoreGraphics.CGSize(400,400);
             _window.Title = "My Circle";
             _window.TitleVisibility = NSWindowTitleVisibility.Hidden;
         }
