@@ -118,25 +118,30 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <BundleResource Include="Resources\refresh.png" />
-    <BundleResource Include="Resources\logout.png" />
-    <BundleResource Include="Resources\speech.png" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\MyCircle\MyCircle.csproj">
       <Project>{7460F46A-E349-417E-AA83-0D3897B36940}</Project>
       <Name>MyCircle</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\" />
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\logout.png" />
+    <BundleResource Include="Resources\logout%402x.png" />
+    <BundleResource Include="Resources\refresh.png" />
+    <BundleResource Include="Resources\refresh%402x.png" />
+    <BundleResource Include="Resources\speech.png" />
+    <BundleResource Include="Resources\speech%402x.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
-  <Import Project="..\..\packages\NETStandard.Library.2.0.0\build\netstandard2.0\NETStandard.Library.targets" Condition="Exists('..\..\packages\NETStandard.Library.2.0.0\build\netstandard2.0\NETStandard.Library.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\packages\NETStandard.Library.2.0.0\build\netstandard2.0\NETStandard.Library.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\NETStandard.Library.2.0.0\build\netstandard2.0\NETStandard.Library.targets'))" />
     <Error Condition="!Exists('..\..\packages\Xamarin.Forms.3.0.0.427558-pre4\build\netstandard2.0\Xamarin.Forms.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Xamarin.Forms.3.0.0.427558-pre4\build\netstandard2.0\Xamarin.Forms.props'))" />
     <Error Condition="!Exists('..\..\packages\Xamarin.Forms.3.0.0.427558-pre4\build\netstandard2.0\Xamarin.Forms.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Xamarin.Forms.3.0.0.427558-pre4\build\netstandard2.0\Xamarin.Forms.targets'))" />
   </Target>
   <Import Project="..\..\packages\Xamarin.Forms.3.0.0.427558-pre4\build\netstandard2.0\Xamarin.Forms.targets" Condition="Exists('..\..\packages\Xamarin.Forms.3.0.0.427558-pre4\build\netstandard2.0\Xamarin.Forms.targets')" />
+  <Import Project="..\..\packages\NETStandard.Library.2.0.2\build\netstandard2.0\NETStandard.Library.targets" Condition="Exists('..\..\packages\NETStandard.Library.2.0.2\build\netstandard2.0\NETStandard.Library.targets')" />
 </Project>
