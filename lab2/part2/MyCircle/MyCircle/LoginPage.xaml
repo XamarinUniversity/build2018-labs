@@ -12,15 +12,18 @@
     <ContentPage.Resources>
         <ResourceDictionary>
             <x:Array Type="{x:Type vm:ProfileColorViewModel}" x:Key="ProfileColors">
+                <vm:ProfileColorViewModel Color="#e60073" />
                 <vm:ProfileColorViewModel Color="Red" />
                 <vm:ProfileColorViewModel Color="DarkRed" />
                 <vm:ProfileColorViewModel Color="Purple" />
                 <vm:ProfileColorViewModel Color="Blue" />
                 <vm:ProfileColorViewModel Color="DarkBlue" />
                 <vm:ProfileColorViewModel Color="#006666" />
+                <vm:ProfileColorViewModel Color="#29a329" />
                 <vm:ProfileColorViewModel Color="DarkGreen" />
-                <vm:ProfileColorViewModel Color="#606060" />
-                <vm:ProfileColorViewModel Color="Black" IsSelected="True" />
+                <vm:ProfileColorViewModel Color="#cc5200" />
+                <vm:ProfileColorViewModel Color="#663300" IsSelected="True" />
+                <vm:ProfileColorViewModel Color="#003300" />
             </x:Array>
         </ResourceDictionary>
     </ContentPage.Resources>
