@@ -163,7 +163,7 @@ If you want to use the pre-supplied service, you can skip to [Part One](#part-1-
 
 ![New Web App](media/image7.png)
 
-4. Name the solution **build2018mycircle**.
+4. Name the solution something easy to remember, the lab uses **build2018mycircle**, but each name in Azure needs to be unique as it is turned into the URL when published - so don't use that name directly, add a number into it, or even name it something completely different.
 
 5. Click **OK** to start the wizard.
 
