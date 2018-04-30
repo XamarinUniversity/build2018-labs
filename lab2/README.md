@@ -98,7 +98,7 @@ The app relies on the [Model-View-ViewModel design pattern](https://docs.microso
 
 ### XAML User Interface definitions
 
-The app uses [XAML](https://docs.microsoft.com/en-us/xamarin/xamarin-forms/xaml/xaml-basics/) to construct and display the user interface for each page. Each XAML file has a corresponding code-behind (**xam.cs**) file, which may have a little connecting logic in it, particularly for navigation. However, most of the programmed logic is contained in the [ViewModels Folder](#viewmodels-folder).
+The app uses [XAML](https://docs.microsoft.com/en-us/xamarin/xamarin-forms/xaml/xaml-basics/) to construct and display the user interface for each page. Each XAML file has a corresponding code-behind (**xaml.cs**) file, which may have a little connecting logic in it, particularly for navigation. However, most of the programmed logic is contained in the [ViewModels Folder](#viewmodels-folder).
 
 | XAML | Description |
 |------|-------------|
@@ -427,7 +427,7 @@ If you run the app now, it will have a runtime failure. The `CircleMessage` defi
 
 2. The server uses the name `CreatedAt` to hold the creation date as a `DateTimeOffset?` - this is a _hardcoded_ field in Azure and the client must conform either by changing the property name, or applying a `JsonProperty` attribute to change the network representation.
 
-3. Make the necessary changes - make sure to use the built-in class rename feature to rename the `CreatedDate` field to `CreatedTo` - so you catch all usages. In addition, make sure to change the field type from `DateTime` to `DateTimeOffset?`.
+3. Make the necessary changes - make sure to use the built-in class rename feature to rename the `CreatedDate` field to `CreatedAt` - so you catch all usages. In addition, make sure to change the field type from `DateTime` to `DateTimeOffset?`.
 
 Here's the correct definition of the `CircleMessage`:
 
