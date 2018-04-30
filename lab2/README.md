@@ -1099,7 +1099,7 @@ The first time, this will take some time - as all records are retrieve (in 50 co
 	- **query name**: a unique string to represent the shape of the data being retrieved. If your app pulls different aspects of the data, you can have different caches by specifying different query names. In addition, you can pass `null` as the query name to force a full fetch.
 	- **query**: the actual query to retrieve - this includes any `Where` and `Select` constraints. You can just use the built-in `CreateQuery` method on the `IMobileServiceSyncTable` interface to do a standard `SELECT` with all fields.
 
-3. You can use any unique string for the query name - the lab will use "syncCircleMessage" here.
+3. You can use any unique string for the query name - the lab will use "sync_CircleMessage" here.
 
 4. Use the default `CreateQuery` on your **messages** field to generate the query. It should return all records (roots and details) since the app will be using them all at some point and it's far more efficient to bundle as much data in one round-trip as possible.
 
