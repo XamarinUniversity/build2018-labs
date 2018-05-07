@@ -501,7 +501,7 @@ You can use the free/trial key, or log into the [Azure Portal](https://portal.az
 
 4. Agree to the terms and login to a Microsoft account to assign the free key.
 
-5. It will then take you to the Cognitive Services API page, scroll down to fine the **Bing Speech API**. It will contain two API keys (primary/secondary). Copy down the primary key.
+5. It will then take you to the Cognitive Services API page, scroll down to find the **Bing Speech API**. It will contain two API keys (primary/secondary). Copy down the primary key.
 
 ![API Key page](media/image10.png)
 
@@ -600,7 +600,7 @@ You can then get the text from the `DisplayText` property of the returning objec
 	- 10 units
 
 ```xml
-<Grid Margin="20">
+<Grid FlexLayout.Shrink="0" Margin="20">
     <Grid.ColumnDefinitions>
         <ColumnDefinition />
         <ColumnDefinition Width="48" />
