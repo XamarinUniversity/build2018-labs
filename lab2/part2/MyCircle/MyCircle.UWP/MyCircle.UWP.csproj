@@ -175,7 +175,7 @@
     <PackageReference Include="Xam.Plugin.SimpleAudioRecorder">
       <Version>0.3.0-beta</Version>
     </PackageReference>
-    <PackageReference Include="Xamarin.Forms" Version="3.0.0.427558-pre4" />
+    <PackageReference Include="Xamarin.Forms" Version="3.0.0.446417" />
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="6.0.8" />
   </ItemGroup>
   <ItemGroup>
