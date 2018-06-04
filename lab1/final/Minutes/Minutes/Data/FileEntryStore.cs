@@ -17,9 +17,10 @@ namespace Minutes.Data
 
         public FileEntryStore()
         {
-            this.filename = Path.Combine(Environment.GetFolderPath(
-                                            Environment.SpecialFolder.LocalApplicationData), 
-                                            "minutes.xml");
+            string folder = Environment.GetFolderPath(Environment.SpecialFolder.InternetCache);
+            if (string.IsNullOrEmpty(folder))
+               folder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            this.filename = Path.Combine(folder, "minutes.xml");
         }
 
         private async Task InitializeAsync()
