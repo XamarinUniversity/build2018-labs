@@ -1105,9 +1105,10 @@ This requires that you implement a new `INoteEntryStore` implementation to save 
 5. Add a public, default (no-argument) constructor to the class and set the filename field using the following code and adding the appropriate `using` directive:
 
 ```csharp
-this.filename = Path.Combine(Environment.GetFolderPath(
-            Environment.SpecialFolder.LocalApplicationData), 
-            "minutes.xml");
+string folder = Environment.GetFolderPath(Environment.SpecialFolder.InternetCache);
+if (string.IsNullOrEmpty(folder))
+   folder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+this.filename = Path.Combine(folder, "minutes.xml");
 ```
 
 > This code stores the file into the proper location on all supported platforms. Each platform has different requirements, but luckily this API abstracts that knowledge away from us.
